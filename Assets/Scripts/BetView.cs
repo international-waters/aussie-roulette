@@ -1,4 +1,13 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+* Building IT Systems (CPT 111 / COSC 2635) SP2, 2016
+* Game: Aussie Roulette  Group: International Waters
+* Authors : Aaron Horton s3465420, David Morling s3492242
+* Jeremy Cottell s3242784, Scott Nelson s3363315 , Simon Overton s3397924
+*
+* This class is resposible for displaying and updating the visual
+* components of the betting GUI.
+****************************************************************************/
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
@@ -7,6 +16,7 @@ public class BetView : MonoBehaviour {
 
 	//Option to disable the bet position display marker
 	public bool isMarkerDisplayed = true;
+	public ChipStacking stackMode;
 
 	private GameObject betMarker;
 	private GameObject chipPrefab;
@@ -23,7 +33,8 @@ public class BetView : MonoBehaviour {
 	Player player;
 
 	void Start(){
-
+		
+		stackMode = ChipStacking.Counter;
 		//load game resources
 		GameObject markerPrefab = Resources.Load<GameObject>("prefabs/BetMarker");
 		chipPrefab = Resources.Load<GameObject>("prefabs/BetChip");
@@ -43,34 +54,49 @@ public class BetView : MonoBehaviour {
 
 
 	}
-
+	/****************************************************************************
+    * This method enables the bet placement marker to be deactivated
+    *****************************************************************************/
 	public void SetMarkerActive(bool active){
 		if (isMarkerDisplayed) {
 			betMarker.SetActive (active);
 		}
 	}
+	/****************************************************************************
+    * This method moves the bet placement marker to a new position
+    *****************************************************************************/
 	public void MoveBetMarker(Vector3 newPositon){
 		if (isMarkerDisplayed) {
 			betMarker.transform.position = newPositon;
 		}
 	}
-
+	/****************************************************************************
+    * This method places a new chip on the table
+	* returns a GameObject containing a reference to this chip
+    *****************************************************************************/
+	//TODO: will need another parameter to indicate value / type of chip
 	public GameObject PlaceChip(Vector3 position){
 		GameObject bet = (GameObject)Instantiate (chipPrefab, position, Quaternion.identity);
 		return bet;
 	}
 
+	/****************************************************************************
+    * This method places a new chip on the table
+	* returns a GameObject containing a reference to this chip
+    *****************************************************************************/
 	public void UpdateStackCounter(BoardBetSpace betspace){
-		int chipCount = betspace.placedChips.Count;
-		if (chipCount > 0 ){
-			if (betspace.chipCounter == null) {
-				betspace.chipCounter = (GameObject)Instantiate (chipTextPrefab,
-					betspace.ChipPlacementPosition (), Quaternion.identity);
-			}
-			betspace.chipCounter.GetComponent<TextMesh>().text = chipCount.ToString ();
+		if (stackMode == ChipStacking.Counter) {
+			int chipCount = betspace.placedChips.Count;
+			if (chipCount > 0) {
+				if (betspace.chipCounter == null) {
+					betspace.chipCounter = (GameObject)Instantiate (chipTextPrefab,
+						betspace.ChipPlacementPosition (), Quaternion.identity);
+				}
+				betspace.chipCounter.GetComponent<TextMesh> ().text = chipCount.ToString ();
 
-		}else if (betspace.chipCounter != null){
-			Destroy (betspace.chipCounter);
+			} else if (betspace.chipCounter != null) {
+				Destroy (betspace.chipCounter);
+			}
 		}
 		//TODO: for testing
 		balance.text = player.wallet.ToString();
