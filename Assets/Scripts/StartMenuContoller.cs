@@ -5,10 +5,10 @@ using System.Collections;
 public class StartMenuContoller : MonoBehaviour {
 
 	public void OnPlayButtonClick(){
-		SceneManager.LoadScene ("GamePlayScreen",LoadSceneMode.Single);
+		SceneManager.LoadScene ("GamePlayScreen");
 	}
 	public void OnHighScoresButtonClick(){
-		SceneManager.LoadScene ("HighScoresScreen",LoadSceneMode.Single);
+		SceneManager.LoadScene ("HighScoresScreen");
 	}
 
 	public void OnExitGameButtonClick(){
@@ -16,12 +16,8 @@ public class StartMenuContoller : MonoBehaviour {
 	}
 		
 	public void OnHighScoresBackButtonClick(){
-		SceneManager.LoadScene ("GamePlayScreen",LoadSceneMode.Single);
+		SceneManager.LoadScene ("GamePlayScreen");
 	}
-
-	public void OnGameScreenBackButtonClick(){
-		SceneManager.LoadScene ("StartScreen",LoadSceneMode.Single);
-	}
-
+		
 
 }

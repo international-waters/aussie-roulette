@@ -28,6 +28,7 @@ public class BetView : MonoBehaviour {
 	private Text winNums;
 	private Text ratio;
 	private Text balance;
+	private Text betTotal;
 
 	//TODO: temporary player
 	Player player;
@@ -45,6 +46,7 @@ public class BetView : MonoBehaviour {
 		winNums = GameObject.Find ("winNums").GetComponent<Text>();
 		ratio = GameObject.Find ("payoutRatio").GetComponent<Text>();
 		balance = GameObject.Find ("balance").GetComponent<Text>();
+		betTotal = GameObject.Find ("betTotal").GetComponent<Text>();
 		player = GameObject.Find ("Player").GetComponent<Player> ();
 		balance.text = player.wallet.ToString();
 
@@ -81,8 +83,7 @@ public class BetView : MonoBehaviour {
 	}
 
 	/****************************************************************************
-    * This method places a new chip on the table
-	* returns a GameObject containing a reference to this chip
+    * This method updates the stack counter after chips are placed or removed.
     *****************************************************************************/
 	public void UpdateStackCounter(BoardBetSpace betspace){
 		if (stackMode == ChipStacking.Counter) {
@@ -100,6 +101,7 @@ public class BetView : MonoBehaviour {
 		}
 		//TODO: for testing
 		balance.text = player.wallet.ToString();
+		betTotal.text = player.CurrentBetTotal.ToString ();
 
 	}
 		

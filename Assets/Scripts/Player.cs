@@ -5,6 +5,7 @@ public class Player : MonoBehaviour {
 
 	public string playerName;
 	public int wallet;
+	private int currentBetTotal;
 
 	// Use this for initialization
 	void Start () {
@@ -16,11 +17,18 @@ public class Player : MonoBehaviour {
 	public int Balance {
 		get {return wallet;}
 	}
+
+	public int CurrentBetTotal{
+		get{return currentBetTotal;}
+		set{currentBetTotal = value;}
+	}
 		
 
-	public bool PlaceBet(int chipValue){
+	public bool TryPlaceBet(int chipValue){
 		if (wallet - chipValue >= 0) {
 			wallet -= chipValue;
+			currentBetTotal += chipValue;
+
 			return true;
 		} else {
 			return false;
@@ -29,6 +37,7 @@ public class Player : MonoBehaviour {
 
 	public void RemoveBet (int chipValue){
 		wallet += chipValue;
+		currentBetTotal -= chipValue;
 	}
 
 
