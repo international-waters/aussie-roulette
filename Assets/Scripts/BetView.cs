@@ -28,6 +28,7 @@ public class BetView : MonoBehaviour {
 	private Text winNums;
 	private Text ratio;
 	private Text balance;
+	private Text betTotal;
 
 	//TODO: temporary player
 	Player player;
@@ -45,8 +46,9 @@ public class BetView : MonoBehaviour {
 		winNums = GameObject.Find ("winNums").GetComponent<Text>();
 		ratio = GameObject.Find ("payoutRatio").GetComponent<Text>();
 		balance = GameObject.Find ("balance").GetComponent<Text>();
+		betTotal = GameObject.Find ("betTotal").GetComponent<Text>();
 		player = GameObject.Find ("Player").GetComponent<Player> ();
-		balance.text = player.wallet.ToString();
+		balance.text = player.Wallet.ToString();
 
 		//instantiate and hide the bet marker
 		betMarker = (GameObject) Instantiate (markerPrefab,new Vector3(), Quaternion.identity);
@@ -76,13 +78,13 @@ public class BetView : MonoBehaviour {
     *****************************************************************************/
 	//TODO: will need another parameter to indicate value / type of chip
 	public GameObject PlaceChip(Vector3 position){
-		GameObject bet = (GameObject)Instantiate (chipPrefab, position, Quaternion.identity);
+		GameObject bet = (GameObject)Instantiate (chipPrefab, position,Quaternion.identity);
 		return bet;
 	}
+		
 
 	/****************************************************************************
-    * This method places a new chip on the table
-	* returns a GameObject containing a reference to this chip
+    * This method updates the stack counter after chips are placed or removed.
     *****************************************************************************/
 	public void UpdateStackCounter(BoardBetSpace betspace){
 		if (stackMode == ChipStacking.Counter) {
@@ -90,7 +92,9 @@ public class BetView : MonoBehaviour {
 			if (chipCount > 0) {
 				if (betspace.chipCounter == null) {
 					betspace.chipCounter = (GameObject)Instantiate (chipTextPrefab,
-						betspace.ChipPlacementPosition (), Quaternion.identity);
+						betspace.ChipPlacementPosition(), Quaternion.identity);
+					//offset z depth so that it shows on top of chips
+					betspace.chipCounter.transform.position -= new Vector3 (0, 0, 1);
 				}
 				betspace.chipCounter.GetComponent<TextMesh> ().text = chipCount.ToString ();
 
@@ -99,8 +103,13 @@ public class BetView : MonoBehaviour {
 			}
 		}
 		//TODO: for testing
-		balance.text = player.wallet.ToString();
+		balance.text = player.Wallet.ToString();
+		betTotal.text = player.CurrentBetTotal.ToString ();
 
+	}
+
+	private Quaternion random2dRotation(){
+		return Quaternion.Euler(0f,0f,Random.Range(0f,360f));
 	}
 		
 	//TODO: temporary code for testing

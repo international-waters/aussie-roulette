@@ -22,7 +22,7 @@ public class BetController : MonoBehaviour {
 	bool isValidBetPosition = false;
 
 	//TODO set chip value logic
-	private int chipValue = 5;
+	//private int chipValue;
 
 	void Start(){
 		
@@ -65,7 +65,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseDown(){
 		if (isValidBetPosition && board.isTakingBets) { {
-				betSpace.PlaceBet (player, chipValue);
+				betSpace.PlaceBet (player, board.chipValue);
 			}
 		}
 	}

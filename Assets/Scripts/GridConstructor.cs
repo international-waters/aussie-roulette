@@ -1,14 +1,22 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+* Building IT Systems (CPT 111 / COSC 2635) SP2, 2016
+* Game: Aussie Roulette  Group: International Waters
+* Authors : Aaron Horton s3465420, David Morling s3492242
+* Jeremy Cottell s3242784, Scott Nelson s3363315 , Simon Overton s3397924
+*
+* 
+****************************************************************************/
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+//x.277, y.356
 
 public class GridConstructor: MonoBehaviour {
 	
 
 	//inside bet cell width and height
-	public float INSIDECELL_X =0.204f;
-	public float INSIDECELL_Y = 0.208f;
+	public float INSIDECELL_X =0.265f;
+	public float INSIDECELL_Y = 0.365f;
 
 	//inside bet column and row size
 	private const int INSIDE_COLS = 7;
@@ -55,7 +63,8 @@ public class GridConstructor: MonoBehaviour {
 				instanceCounter++;
 				//Create a new inside bet collider at the current grid location
 				GameObject location = (GameObject) Instantiate (InsideBetLocation, 
-					new Vector3((row * INSIDECELL_X)-xOffset, (col* INSIDECELL_Y) - yOffset, 0), Quaternion.identity);
+					new Vector3((row * INSIDECELL_X)-xOffset, (col* INSIDECELL_Y) - yOffset, -2), Quaternion.identity);
+				location.transform.parent = transform;
 				bettingSpaces.Add (location);
 				BoardBetSpace betSpace = location.GetComponent<BoardBetSpace> ();
 				BoardBetSpaceType betSpaceType = location.GetComponent<BoardBetSpaceType> ();
