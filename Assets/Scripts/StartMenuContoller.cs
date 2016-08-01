@@ -13,7 +13,8 @@ using System.Collections;
 public class StartMenuContoller : MonoBehaviour {
 
 	public void OnPlayButtonClick(){
-		SceneManager.LoadScene ("GamePlayScreen");
+	SceneManager.LoadScene ("GamePlayScreen");
+
 	}
 	public void OnHighScoresButtonClick(){
 		SceneManager.LoadScene ("HighScoresScreen");

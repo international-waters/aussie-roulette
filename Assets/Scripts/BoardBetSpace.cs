@@ -16,44 +16,79 @@ public class BoardBetSpace : MonoBehaviour {
 	private BetView betView;
 	private const int Z_CHIP_POS = -3;
 	public const int STACK_LIMIT = 9;
-	//public BetTypeEnum betType;
+
 	public BoardBetSpaceType betSpaceType;
 	public int[] winNumbers;
+	private int id = -1;
 	public List<GameObject> placedChips;
-	public List<SavedChip> lastBetHistory;
-	public GameObject chipCounter;
+	public GameObject chipCounterObj;
+	public int placedChipsCount;
 
 	public float ColliderCenterOffsetX = 0;
 	public float ColliderCenterOffsetY = 0;
+	public int visibleID;
 
-	// Use this for initialization
+	//ID number is used when saving / loading games
+	public int ID {
+		get{return id; }
+		//work around to ensure id number is only set once (can't be changed after being set) 
+		set{
+			if (id == -1){
+				id = value;
+				visibleID = id;
+			}
+		}
+	}
+		
 	void Start () {
 		betSpaceType = this.GetComponent<BoardBetSpaceType> ();
 		betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
 		placedChips = new List<GameObject> ();
-		lastBetHistory = new List<SavedChip> ();
 	}
-	 
-	public void PlaceBet(Player player, int chipValue){
+		
+	private void PlaceChip(Player player, string playerName, int chipValue, bool isPayedFor){
 		if (placedChips.Count < STACK_LIMIT) {
-			if (player.TryBuyChip (chipValue)) {
-				// place the chip on the table and get a reference to it
-				GameObject chipObject = betView.PlaceChip (ChipPlacementPosition());
-				Chip chipDetails = chipObject.GetComponent<Chip> ();
-				chipDetails.ownedByPlayer = player;
-				chipDetails.Value = chipValue;
-				placedChips.Add (chipObject);
-				betView.UpdateStackCounter (this);
+			bool isChipPayedFor = false;
+
+			//if the chip is not payed for or is being loaded and belongs to the current player
+			if (!isPayedFor && player.playerName == playerName) {
+				//try and buy a chip, if player cannot afford it no bet is placed.
+				isChipPayedFor = player.TryBuyChip (chipValue);
+			//if chip does not belong to the current player it is just placed on the board.
+			}else{
+				isChipPayedFor = true;
 			}
+			if (isChipPayedFor) {
+				// place the chip GameObject on the table and get a reference to it
+				GameObject chipObject = betView.PlaceChip (ChipPlacementPosition ());
+				Chip chipDetails = chipObject.GetComponent<Chip> ();
+				if (player != null) {
+					chipDetails.ownedByPlayer = player.playerName;
+				} else {
+					chipDetails.ownedByPlayer = playerName;
+				}
+				chipDetails.Value = chipValue;
+				chipDetails.betSpaceId = this.ID;
+				placedChips.Add (chipObject);
+			}
+			betView.UpdateStackCounter (this);
 		}
 	}
 
-	public void RemoveBet(Player player){
+	public void PlaceChip(Player currentPlayer, int chipValue){
+		PlaceChip (currentPlayer,currentPlayer.playerName,chipValue, false);
+	}
+		
+	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo){
+		PlaceChip (currentPlayer, chipInfo.ownedByPlayer, chipInfo.value, false);
+	}
+
+	public void RemoveLastPlacedChip(Player player){
 		if (placedChips.Count > 0) {
 			Chip lastChip; 
 			for (int i = placedChips.Count-1; i >= 0; i--) {
 				lastChip = placedChips [i].GetComponent<Chip> ();
-				if (lastChip.ownedByPlayer == player) {
+				if (lastChip.ownedByPlayer == player.playerName) {
 					GameObject chipObject = placedChips [i];
 					player.SellChip (lastChip.Value);
 					placedChips.RemoveAt (i);
@@ -64,8 +99,8 @@ public class BoardBetSpace : MonoBehaviour {
 			}
 		}
 	}
-	//used for losing bets, clears all bets on the betSpace without crediting players
-	public void clearPlacedBets(){
+	//Remove all chips, no player is credited, used for losing numbers and for clearing the board
+	public void RemoveAllChips(){
 		for (int i = placedChips.Count-1; i >= 0; i--){
 			Destroy (placedChips [i]);
 		}
@@ -73,39 +108,40 @@ public class BoardBetSpace : MonoBehaviour {
 		betView.UpdateStackCounter (this);
 	}
 
-	public void ClearAndCreditPlayer(Player player){
+	//Remove all chips, specifed player is credited
+	//TODO: will need a player[] version if more than one player is implemented
+	public void RemoveAllChips(Player playerToCredit){
 		for (int i = placedChips.Count-1; i >= 0; i--)
 		{
 			Chip chip = placedChips[i].GetComponent<Chip> ();
-			if (chip.ownedByPlayer == player) {
-				GameObject chipObject = placedChips [i];
-				player.SellChip (chip.Value);
-				placedChips.RemoveAt(i);
-				Destroy (chipObject);
+			GameObject chipObject = placedChips [i];
+			if (chip.ownedByPlayer == playerToCredit.playerName) {
+				playerToCredit.SellChip (chip.Value);
 			}
+			Destroy (chipObject);
 		}
-	//	betView.UpdateStackCounter (this);
+		placedChips = new List<GameObject> ();
+		betView.UpdateStackCounter (this);
 	}
 
-	//used for winning bets, pays all bets owned by a player at this postion
-	public int PayoutBets(Player player){
+	//calculate winnings to be payed to the player
+	public int CalculateWinnings(Player player){
 		int payoutRatio = betSpaceType.PayoutToOneRatio;
 		int winnings = 0;
 		foreach (GameObject chipObj in placedChips) {
 			Chip chip = chipObj.GetComponent<Chip> ();
-			if (chip.ownedByPlayer == player) {
+			if (chip.ownedByPlayer == player.playerName) {
 				winnings += (chip.Value * payoutRatio);
 			}
 		}
 		return winnings;
 	}
-
-	//not tested
-	public int PlayersBetTotal(Player player){
+		
+	public int PlacedChipsTotalValue(Player player){
 		int total = 0;
 		foreach (GameObject chipObj in placedChips) {
 			Chip chip = chipObj.GetComponent<Chip> ();
-			if (chip.ownedByPlayer == player) {
+			if (chip.ownedByPlayer == player.playerName) {
 				total += (chip.Value);
 			}
 		}
@@ -126,7 +162,7 @@ public class BoardBetSpace : MonoBehaviour {
 	}
 
 	//Utiliy method to write the winning numbers array as a comma delimited string
-	public string winNumbersToString()
+	public string WinNumbersToString()
 	{
 		var sb = new StringBuilder();
 		int counter = 0;
@@ -138,41 +174,6 @@ public class BoardBetSpace : MonoBehaviour {
 			}
 		}
 		return sb.ToString ();
-	}
-	public void SaveBets(){
-		lastBetHistory = new List<SavedChip> ();
-		foreach (GameObject placedChipObj in placedChips) {
-			Chip placedchip = placedChipObj.GetComponent<Chip> ();
-			SavedChip savedChip = new SavedChip (placedchip.Value, placedchip.ownedByPlayer);
-			lastBetHistory.Add (savedChip);
-		}
-	}
-	public void LoadBets(Player player){
-		LoadBets (lastBetHistory, player);
-	}
-
-	public int SavedBetsValue(Player player){
-		int total = 0;
-		foreach (SavedChip chip in lastBetHistory) {
-			if (chip.ownedByPlayer == player) {
-				total += chip.value;
-			}
-		}
-		return total;
-	}
-
-	public void LoadBets(List<SavedChip> savedBets, Player player){
-		//first remove and credit the player for any bets that remain on the table
-		ClearAndCreditPlayer (player);
-		foreach (SavedChip savedChip in savedBets) {
-
-			if (savedChip.ownedByPlayer == player) {
-				PlaceBet (player, savedChip.value);
-		
-			}
-		
-		}
-		betView.UpdateStackCounter (this);
 	}
 
 }

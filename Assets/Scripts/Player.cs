@@ -8,20 +8,30 @@
 ****************************************************************************/
 using UnityEngine;
 using System.Collections;
+using System;
 
-public class Player : MonoBehaviour {
+[Serializable]
+public class Player{
 
 	public string playerName;
 	private int wallet;
 	private int currentBetTotal;
 
-	// Use this for initialization
-	void Start () {
-		
-		wallet = 100;
-		playerName = "Joe";
+	public int LastWin{ get; set;}
+	private const int STARTING_BALANCE = 100;
+
+
+
+	public Player(){
+		this.playerName = "Anonymous";
+		this.wallet = STARTING_BALANCE;
 	}
 
+	public Player (string playerName, int wallet) {
+		this.playerName = playerName;
+		this.wallet = wallet;
+	}
+		
 	public int Wallet {
 		get {return wallet;}
 	}
@@ -36,7 +46,6 @@ public class Player : MonoBehaviour {
 		if (wallet - chipValue >= 0) {
 			wallet -= chipValue;
 			currentBetTotal += chipValue;
-
 			return true;
 		} else {
 			return false;
@@ -50,11 +59,8 @@ public class Player : MonoBehaviour {
 
 	public void RecieveWinnings(int winnings){
 		wallet += winnings;
+		LastWin = winnings;
 	}
 		
 
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

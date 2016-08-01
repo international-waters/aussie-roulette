@@ -12,57 +12,81 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameScreenUIcontroller : MonoBehaviour {
-	private Player player;
 	private Board board;
 	private Dropdown winNumber;
-	private Text lastWin;
-	private Text placedBets;
-	private Text wallet;
-	private Dropdown chipValue;
+	private Text winnerlbl;
+	private Dropdown chipValueList;
+	private GameManager game;
+
 
 	void Start(){
+		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
-		player = GameObject.Find ("Player").GetComponent<Player> ();
 		winNumber = GameObject.Find("winNumberDropdown").GetComponent<Dropdown>();
-		lastWin = GameObject.Find("winAmount").GetComponent<Text>();
-		placedBets = GameObject.Find("betTotal").GetComponent<Text>();
-		wallet = GameObject.Find("balance").GetComponent<Text>();
-		chipValue = GameObject.Find("ChipValueList").GetComponent<Dropdown>();
+		winnerlbl = GameObject.Find("winningNumber").GetComponent<Text>();
+		//placedBets = GameObject.Find("betTotal").GetComponent<Text>();
+		//wallet = GameObject.Find("balance").GetComponent<Text>();
+		chipValueList = GameObject.Find("ChipValueList").GetComponent<Dropdown>();
+		game.RefreshScorePanel ();
 	}
+		
 
 	public void OnBackButtonClick(){
-		SceneManager.LoadScene ("StartScreen",LoadSceneMode.Single);
+		SceneManager.LoadScene ("StartScreen");
+	}
+
+	public void OnSaveButtonClick(){
+		game.SaveGame(game.player, board);
+		board.ClearAllBets ();
+		game.RefreshScorePanel ();
+	}
+
+	public void OnLoadButtonClick(){
+		game.player = game.LoadGame(game.player.playerName, board);
+		game.player.CurrentBetTotal = board.CalculatePlayersTotalBet (game.player);
+		game.RefreshScorePanel ();
+		board.ClearStoredChipHistory ();
 	}
 
 	public void OnClearBetsButtonCick(){
-		board.ClearAllBets (player);
-		player.CurrentBetTotal = 0;
-		lastWin.text = "0";
+		board.StoreAllPlacedChipInfo ();
+		board.ClearAllBets (game.player);
+		//game.player.LastWin = 0;
+		game.RefreshScorePanel ();
 	}
 
 	public void OnTestWinnerButtonClick(){
-		board.SaveAllBets ();
-		board.ClearLosingBets (winNumber.value);
-		int winnings = board.PayWinnings (winNumber.value, player);
-		lastWin.text = winnings.ToString ();
-		//player.RecieveWinnings(winnings);
-		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
-		placedBets.text = player.CurrentBetTotal.ToString ();
-		wallet.text = player.Wallet.ToString ();
-	}
+		int winner = winNumber.value;
+		winnerlbl.text = winner.ToString ();
+		board.StoreAllPlacedChipInfo ();
+		board.ClearLosingBets (winner);
+		board.PayoutWinnings (winner, game.player);
+		game.player.CurrentBetTotal = board.CalculatePlayersTotalBet (game.player);
+		game.RefreshScorePanel ();
+
+	} 
+
+	public void OnSpinButtonClick(){
+		board.StoreAllPlacedChipInfo ();
+		int winner = (int)Mathf.Round(Random.Range (0f, 36f));
+		winnerlbl.text = winner.ToString ();
+		board.ClearLosingBets (winner);
+		board.PayoutWinnings (winner, game.player);
+		game.player.CurrentBetTotal = board.CalculatePlayersTotalBet (game.player);
+		game.RefreshScorePanel ();
+
+	} 
 
 	public void OnLoadLastBetsButtonClick(){
-		board.LoadBets (player);
-		placedBets.text = player.CurrentBetTotal.ToString ();
-		wallet.text = player.Wallet.ToString ();
+		board.ClearAllBets (game.player);
+		board.PlaceAllStoredChips(game.player,board.SelectedChipValue);
+		game.RefreshScorePanel ();
 	}
 
 	public void OnChipValueListChanged(){
-		board.ClearAllBets (player);
-		player.CurrentBetTotal = 0;
-		lastWin.text = "0";
+
 		int value = 1;
-		switch (chipValue.value) {
+		switch (chipValueList.value) {
 		case 0:
 			break;
 		case 1:
@@ -79,7 +103,9 @@ public class GameScreenUIcontroller : MonoBehaviour {
 			value = 50;
 			break;
 		}
-		board.chipValue = value;
+		board.ClearAllBets (game.player);
+		board.SelectedChipValue = value;
+		game.RefreshScorePanel ();
 	}
 		
 }
