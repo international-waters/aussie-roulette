@@ -14,7 +14,7 @@ using System;
 public class Player{
 
 	public string playerName;
-	private int wallet;
+	public int wallet;
 	private int currentBetTotal;
 
 	public int LastWin{ get; set;}
