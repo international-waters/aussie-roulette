@@ -53,6 +53,8 @@ public class GameManager : MonoBehaviour {
 		if (score_lbl == null) score_lbl = GameObject.Find("score").GetComponent<Text>();
 	}
 
+
+	//this will need to be changed to use playerprefs as it won't work with webplayer
 	public void SaveGame(Player player, Board board){
 		string savePath = Application.persistentDataPath;
 
@@ -77,6 +79,7 @@ public class GameManager : MonoBehaviour {
 		writer.Close ();
 	}
 
+	//this will need to be changed to use playerprefs as it won't work with webplayer
 	public Player LoadGame(string playerName, Board board){
 		string savePath = Application.persistentDataPath;
 		Player player;
