@@ -27,7 +27,6 @@ public class GridConstructor: MonoBehaviour {
 	public float xOffset;
 
 	public GameObject InsideBetLocation;
-	private int idNumber = 1;
 	void Start () {
 	}
 
@@ -69,7 +68,7 @@ public class GridConstructor: MonoBehaviour {
 		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
 
 		betSpaceObj = GameObject.Find ("oddCollider");
-		betSpaceObj.GetComponent<BoardBetSpace> ().ID = idNumber++;
+		bettingSpaces.Add (betSpaceObj);
 		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
 
 		betSpaceObj = GameObject.Find ("highCollider");
