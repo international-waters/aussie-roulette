@@ -8,20 +8,24 @@
 ****************************************************************************/
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class Chip : MonoBehaviour {
 
-	private int value;
+	private int chipValue;
+	public int val; // just so that it shows in the inspector for reference;
+	public string ownedByPlayer;
+	public int betSpaceId = -1;
 	public int spriteSortOrder = 3;
 	public Sprite[] sprites;
-	public Player ownedByPlayer;
 	private SpriteRenderer spriteRenderer;
 
 	public int Value {
-		get{ return value; }
+		get{ return chipValue; }
 		set{
-			this.value = value;
+			this.chipValue = value;
 			SetSpriteByChipValue ();
+			val = this.chipValue;
 		}
 
 	}
@@ -29,13 +33,15 @@ public class Chip : MonoBehaviour {
 		spriteRenderer = this.gameObject.GetComponent<SpriteRenderer> ();
 	}
 	public void Start() {
-		SetSpriteByChipValue ();
+		//SetSpriteByChipValue ();
 		spriteRenderer.sortingOrder = spriteSortOrder;
-
-}
+	}
+	public ChipInfo ToChipInfo(){
+		return new ChipInfo (this.Value, this.ownedByPlayer, this.betSpaceId);
+	}
 	public void SetSpriteByChipValue ()
 	{
-		switch (value) {
+		switch (chipValue) {
 		case 1:
 			spriteRenderer.sprite = sprites [0];
 			break;
@@ -51,21 +57,27 @@ public class Chip : MonoBehaviour {
 		case 50:
 			spriteRenderer.sprite = sprites [4];
 			break;
+		//else do nothing 
 		}
 	}
 }
 
 
-
-public class SavedChip {
+[Serializable]
+public class ChipInfo {
 	public int value;
-	public Player ownedByPlayer;
+	public string ownedByPlayer;
+	public int betSpaceId;
 
-	public SavedChip(){
+	public ChipInfo(){
 		
 	}
-	public SavedChip(int value, Player player){
+	public ChipInfo(int value, string playerName, int betSpaceId){
 		this.value = value;
-		this.ownedByPlayer = player;
+		this.ownedByPlayer = playerName;
+		this.betSpaceId = betSpaceId;
 	}
 }
+
+
+

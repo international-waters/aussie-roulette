@@ -18,21 +18,24 @@ public class BetController : MonoBehaviour {
 	private BoardBetSpace betSpace;
 	private Board board;
 	private Player player;
-	public int betCount;
+	private GameManager game;
+	//public int betCount;
 	bool isValidBetPosition = false;
 
-	//TODO set chip value logic
-	//private int chipValue;
 
 	void Start(){
 		
-		//Load required resourses
-		betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
-		board =  GameObject.Find ("RouletteTable").GetComponent<Board> ();
-		player = GameObject.Find ("Player").GetComponent<Player> ();
+		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		player = game.player;
+		betView = GameObject.Find ("RouletteTable").GetComponent<BetView>();
+		board =  GameObject.Find ("RouletteTable").GetComponent<Board>();
 		betSpace = gameObject.GetComponent<BoardBetSpace> ();
 
 	}
+
+	void Update(){
+	}
+
 	/****************************************************************************
     * This method determines if the cursor is over a valid bet postion on the 
     * roulette table and enables bet placement. The bet placement marker is set
@@ -45,7 +48,7 @@ public class BetController : MonoBehaviour {
 		betView.MoveBetMarker (betSpace.ChipPlacementPosition());
 
 		//TODO: this is just used for dev / testing
-		betView.DisplayLocationInfo (betSpace);
+		//betView.DisplayLocationInfo (betSpace);
 
 	
 	}
@@ -65,7 +68,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseDown(){
 		if (isValidBetPosition && board.isTakingBets) { {
-				betSpace.PlaceBet (player, board.chipValue);
+				betSpace.PlaceChip (player, board.SelectedChipValue);
 			}
 		}
 	}
@@ -78,7 +81,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseOver(){
 		if (Input.GetMouseButtonDown (1) && isValidBetPosition && board.isTakingBets) {
-			betSpace.RemoveBet (player);
+			betSpace.RemoveLastPlacedChip (player);
 		}
 	}
 }

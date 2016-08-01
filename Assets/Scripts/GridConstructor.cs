@@ -27,29 +27,66 @@ public class GridConstructor: MonoBehaviour {
 	public float xOffset;
 
 	public GameObject InsideBetLocation;
-	public int instanceCounter = 0;
-
+	private int idNumber = 1;
 	void Start () {
 	}
 
 	public List<GameObject> CreateBettingSpaces(){
 		//add inside betting spaces to the list
 		List<GameObject> bettingSpaces = ConstructInsideBetGrid ();
-
+		GameObject betSpaceObj;
 		//add outside betting spaces to the list
-		bettingSpaces.Add (GameObject.Find ("zeroCollider"));
-		bettingSpaces.Add (GameObject.Find ("firstDozenCollider"));
-		bettingSpaces.Add (GameObject.Find ("secondDozenCollider"));
-		bettingSpaces.Add (GameObject.Find ("thirdDozenCollider"));
-		bettingSpaces.Add (GameObject.Find ("lowCollider"));
-		bettingSpaces.Add (GameObject.Find ("evenCollider"));
-		bettingSpaces.Add (GameObject.Find ("redCollider"));
-		bettingSpaces.Add (GameObject.Find ("blackCollider"));
-		bettingSpaces.Add (GameObject.Find ("oddCollider"));
-		bettingSpaces.Add (GameObject.Find ("highCollider"));
-		bettingSpaces.Add (GameObject.Find ("firstColumnCollider"));
-		bettingSpaces.Add (GameObject.Find ("secondColumnCollider"));
-		bettingSpaces.Add (GameObject.Find ("thirdColumnCollider"));
+		betSpaceObj = GameObject.Find ("zeroCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("firstDozenCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("secondDozenCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("thirdDozenCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("lowCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("evenCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("redCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("blackCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("oddCollider");
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = idNumber++;
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("highCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("firstColumnCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("secondColumnCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
+
+		betSpaceObj = GameObject.Find ("thirdColumnCollider");
+		bettingSpaces.Add (betSpaceObj);
+		betSpaceObj.GetComponent<BoardBetSpace> ().ID = bettingSpaces.Count - 1;
 
 		return bettingSpaces;
 	}
@@ -60,13 +97,13 @@ public class GridConstructor: MonoBehaviour {
 		int FirstRowNumber = -2;
 		for (int row = 0; row < INSIDE_ROWS; row ++) {
 			for (int col = 0; col < INSIDE_COLS; col ++) {
-				instanceCounter++;
 				//Create a new inside bet collider at the current grid location
 				GameObject location = (GameObject) Instantiate (InsideBetLocation, 
 					new Vector3((row * INSIDECELL_X)-xOffset, (col* INSIDECELL_Y) - yOffset, -2), Quaternion.identity);
 				location.transform.parent = transform;
 				bettingSpaces.Add (location);
 				BoardBetSpace betSpace = location.GetComponent<BoardBetSpace> ();
+				betSpace.ID = bettingSpaces.Count-1;
 				BoardBetSpaceType betSpaceType = location.GetComponent<BoardBetSpaceType> ();
 				// check if the row corrosponds with "straight up locations"
 				if (row % 2 == 1) {

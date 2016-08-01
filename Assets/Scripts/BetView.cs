@@ -16,42 +16,29 @@ public class BetView : MonoBehaviour {
 
 	//Option to disable the bet position display marker
 	public bool isMarkerDisplayed = true;
-	public ChipStacking stackMode;
+	private ChipStacking stackMode; // private because stacking mode not implemented
 
+	private GameManager game;
 	private GameObject betMarker;
 	private GameObject chipPrefab;
 	private GameObject chipTextPrefab;
 	private GameObject stackCounter;
 
-	//TODO: temporary text boxes for testing
-	private Text betType;
-	private Text winNums;
-	private Text ratio;
-	private Text balance;
-	private Text betTotal;
-
-	//TODO: temporary player
 	Player player;
 
 	void Start(){
 		
 		stackMode = ChipStacking.Counter;
 		//load game resources
+		game = GameObject.Find("GameManager").GetComponent<GameManager>();
 		GameObject markerPrefab = Resources.Load<GameObject>("prefabs/BetMarker");
 		chipPrefab = Resources.Load<GameObject>("prefabs/BetChip");
 		chipTextPrefab = Resources.Load<GameObject>("prefabs/ChipText");
 
-		//TODO: temporary code for testing
-		betType = GameObject.Find ("betType").GetComponent<Text>();
-		winNums = GameObject.Find ("winNums").GetComponent<Text>();
-		ratio = GameObject.Find ("payoutRatio").GetComponent<Text>();
-		balance = GameObject.Find ("balance").GetComponent<Text>();
-		betTotal = GameObject.Find ("betTotal").GetComponent<Text>();
-		player = GameObject.Find ("Player").GetComponent<Player> ();
-		balance.text = player.Wallet.ToString();
 
 		//instantiate and hide the bet marker
 		betMarker = (GameObject) Instantiate (markerPrefab,new Vector3(), Quaternion.identity);
+		betMarker.transform.parent = transform;
 		betMarker.SetActive (false);
 
 
@@ -76,10 +63,10 @@ public class BetView : MonoBehaviour {
     * This method places a new chip on the table
 	* returns a GameObject containing a reference to this chip
     *****************************************************************************/
-	//TODO: will need another parameter to indicate value / type of chip
 	public GameObject PlaceChip(Vector3 position){
-		GameObject bet = (GameObject)Instantiate (chipPrefab, position,Quaternion.identity);
-		return bet;
+		GameObject ChipObj = (GameObject)Instantiate (chipPrefab, position,Quaternion.identity);
+		ChipObj.transform.parent = this.transform;
+		return ChipObj;
 	}
 		
 
@@ -89,33 +76,28 @@ public class BetView : MonoBehaviour {
 	public void UpdateStackCounter(BoardBetSpace betspace){
 		if (stackMode == ChipStacking.Counter) {
 			int chipCount = betspace.placedChips.Count;
+			betspace.placedChipsCount = chipCount;
 			if (chipCount > 0) {
-				if (betspace.chipCounter == null) {
-					betspace.chipCounter = (GameObject)Instantiate (chipTextPrefab,
-						betspace.ChipPlacementPosition(), Quaternion.identity);
+				if (betspace.chipCounterObj == null) {
+					betspace.chipCounterObj = (GameObject)Instantiate (chipTextPrefab,
+						betspace.ChipPlacementPosition (), Quaternion.identity);
 					//offset z depth so that it shows on top of chips
-					betspace.chipCounter.transform.position -= new Vector3 (0, 0, 1);
+					betspace.chipCounterObj.transform.position -= new Vector3 (0, 0, 1);
+					betspace.chipCounterObj.transform.parent = this.transform;
 				}
-				betspace.chipCounter.GetComponent<TextMesh> ().text = chipCount.ToString ();
+				betspace.chipCounterObj.SetActive (true);
+				betspace.chipCounterObj.GetComponent<TextMesh> ().text = chipCount.ToString ();
 
-			} else if (betspace.chipCounter != null) {
-				Destroy (betspace.chipCounter);
+			}
+			if (betspace.chipCounterObj != null && chipCount <= 0) {
+				betspace.chipCounterObj.SetActive(false);
 			}
 		}
-		//TODO: for testing
-		balance.text = player.Wallet.ToString();
-		betTotal.text = player.CurrentBetTotal.ToString ();
-
+		game.RefreshScorePanel ();
 	}
-
+		
 	private Quaternion random2dRotation(){
 		return Quaternion.Euler(0f,0f,Random.Range(0f,360f));
 	}
 		
-	//TODO: temporary code for testing
-	public void DisplayLocationInfo(BoardBetSpace betSpace){
-		betType.text = betSpace.betSpaceType.Name;
-		winNums.text = betSpace.winNumbersToString ();
-		ratio.text = betSpace.betSpaceType.PayoutToOneRatio.ToString ();
-	}
 }
