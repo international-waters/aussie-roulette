@@ -18,7 +18,7 @@ public class Player{
 	private int currentBetTotal;
 
 	public int LastWin{ get; set;}
-	private const int STARTING_BALANCE = 100;
+	public const int STARTING_BALANCE = 100;
 
 
 
@@ -27,7 +27,7 @@ public class Player{
 		this.wallet = STARTING_BALANCE;
 	}
 
-	public Player (string playerName, int wallet) {
+	public Player (string playerName, int wallet = STARTING_BALANCE) {
 		this.playerName = playerName;
 		this.wallet = wallet;
 	}

@@ -24,7 +24,6 @@ public class BetView : MonoBehaviour {
 	private GameObject chipTextPrefab;
 	private GameObject stackCounter;
 
-	Player player;
 
 	void Start(){
 		
