@@ -16,10 +16,7 @@ public class Board : MonoBehaviour {
 	public List<GameObject> betSpaces;
 	public List<ChipInfo> savedChips;
 	public int SelectedChipValue = 1;
-//	private GameManager game;
 	public bool isTakingBets;
-	private BetView betView;
-
 
 
 	public static Board instance { get; private set;}
@@ -42,10 +39,8 @@ public class Board : MonoBehaviour {
 
 	void Start () {
 
-		//game = GameObject.Find ("GameManager").GetComponent<GameManager>();
 		//create the betting grid gameobjects and store them
 		betSpaces = gameObject.GetComponent<GridConstructor> ().CreateBettingSpaces ();
-		betView = gameObject.GetComponent<BetView> ();
 		isTakingBets = true;
 	}
 		
@@ -55,8 +50,6 @@ public class Board : MonoBehaviour {
 		foreach (Transform child in transform) {
 			if (child.name != "BetMarker(Clone)") {
 				child.gameObject.SetActive (isThisLevelLoaded);
-			} else {
-				int a = 5; a++;
 			}
 		}
 		if (isThisLevelLoaded) {

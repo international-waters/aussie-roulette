@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class GameScreenUIcontroller : MonoBehaviour {
 	private Board board;
@@ -17,15 +18,14 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	private Text winnerlbl;
 	private Dropdown chipValueList;
 	private GameManager game;
-
+	private BetView betView;
+	private BetController betController;
 
 	void Start(){
 		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
 		winNumber = GameObject.Find("winNumberDropdown").GetComponent<Dropdown>();
 		winnerlbl = GameObject.Find("winningNumber").GetComponent<Text>();
-		//placedBets = GameObject.Find("betTotal").GetComponent<Text>();
-		//wallet = GameObject.Find("balance").GetComponent<Text>();
 		chipValueList = GameObject.Find("ChipValueList").GetComponent<Dropdown>();
 		game.RefreshScorePanel ();
 	}
@@ -36,6 +36,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	}
 
 	public void OnSaveButtonClick(){
+		
 		game.SaveGame(game.player, board);
 		board.ClearAllBets ();
 		game.RefreshScorePanel ();
@@ -51,7 +52,6 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	public void OnClearBetsButtonCick(){
 		board.StoreAllPlacedChipInfo ();
 		board.ClearAllBets (game.player);
-		//game.player.LastWin = 0;
 		game.RefreshScorePanel ();
 	}
 

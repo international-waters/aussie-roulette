@@ -17,7 +17,6 @@ public class BetController : MonoBehaviour {
 	private BetView betView;
 	private BoardBetSpace betSpace;
 	private Board board;
-	private Player player;
 	private GameManager game;
 	//public int betCount;
 	bool isValidBetPosition = false;
@@ -26,7 +25,6 @@ public class BetController : MonoBehaviour {
 	void Start(){
 		
 		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
-		player = game.player;
 		betView = GameObject.Find ("RouletteTable").GetComponent<BetView>();
 		board =  GameObject.Find ("RouletteTable").GetComponent<Board>();
 		betSpace = gameObject.GetComponent<BoardBetSpace> ();
@@ -68,7 +66,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseDown(){
 		if (isValidBetPosition && board.isTakingBets) { {
-				betSpace.PlaceChip (player, board.SelectedChipValue);
+				betSpace.PlaceChip (game.player, board.SelectedChipValue);
 			}
 		}
 	}
@@ -81,7 +79,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseOver(){
 		if (Input.GetMouseButtonDown (1) && isValidBetPosition && board.isTakingBets) {
-			betSpace.RemoveLastPlacedChip (player);
+			betSpace.RemoveLastPlacedChip (game.player);
 		}
 	}
 }

@@ -8,6 +8,7 @@
 ****************************************************************************/
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class Chip : MonoBehaviour {
@@ -77,6 +78,42 @@ public class ChipInfo {
 		this.ownedByPlayer = playerName;
 		this.betSpaceId = betSpaceId;
 	}
+}
+
+[Serializable]
+public class HighScore : IComparable<HighScore>{
+	public string playerName;
+	public int score;
+
+	public HighScore(){
+	}
+
+	public HighScore(string playerName, int score){
+		this.playerName = playerName;
+		this.score = score;
+	}
+
+/*	public int Compare(HighScore x, HighScore y)
+	//int IComparer<HighScore>.Compare (HighScore x, HighScore y)
+	{
+		if (x.score > y.score)
+			return 1;
+		if (x.score < y.score)
+			return -1;
+		else
+			return 0;
+	}
+	public int CompareTo(HighScore other){
+		return score.CompareTo (other.score);
+	} */
+
+
+	int IComparable<HighScore>.CompareTo (HighScore other)
+	{
+		return other.score.CompareTo (this.score);
+	}
+
+
 }
 
 
