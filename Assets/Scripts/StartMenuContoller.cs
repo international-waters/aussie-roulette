@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -12,16 +13,27 @@ public class StartMenuContoller : MonoBehaviour {
 	}
 
 	public void OnExitGameButtonClick(){
-		Application.Quit();
+        SceneManager.LoadScene("CloseScreen", LoadSceneMode.Single);
+		SceneManager.LoadScene("CloseDialog",LoadSceneMode.Additive);
 	}
 		
 	public void OnHighScoresBackButtonClick(){
-		SceneManager.LoadScene ("GamePlayScreen",LoadSceneMode.Single);
+		SceneManager.LoadScene ("StartScreen",LoadSceneMode.Single);
 	}
 
 	public void OnGameScreenBackButtonClick(){
 		SceneManager.LoadScene ("StartScreen",LoadSceneMode.Single);
 	}
 
+    public void OnCloseDialogYes()
+    {
+        Application.Quit();
+    }
+
+    public void OnCloseDialogNo()
+    {
+        Application.CancelQuit();
+        SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
+    }
 
 }
