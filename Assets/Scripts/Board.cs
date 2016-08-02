@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour {
 
@@ -17,15 +18,18 @@ public class Board : MonoBehaviour {
 	public List<ChipInfo> savedChips;
 	public int SelectedChipValue = 1;
 	public bool isTakingBets;
+	private GameManager game;
 
 
 	public static Board instance { get; private set;}
 	void Awake () {
 		//game must be started from the start screen in order to create the peristant
 		//game manager object
-		if (GameObject.Find ("GameManager") == null){
+		if (GameObject.Find ("GameManager") == null) {
 			Destroy (gameObject);
 			SceneManager.LoadScene ("StartScreen");
+		} else {
+			game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		}
 		//singleton pattern for keeping alive accross scenes
 		if (instance == null) {
@@ -52,8 +56,14 @@ public class Board : MonoBehaviour {
 				child.gameObject.SetActive (isThisLevelLoaded);
 			}
 		}
+		//this should allow winning number to be processed upon return for the animation scene
+		//(not tested)
 		if (isThisLevelLoaded) {
-			//reload any resources and "wake up" the board
+			if (game.winningNumber >= 0 && game.winningNumber < 37) {
+				game.ProcessWinningNumber (this);
+				Text winLabel = GameObject.Find ("winningNumber").GetComponent<Text> ();
+				winLabel.text = game.winningNumber.ToString ();
+			}
 		}
 	}
 

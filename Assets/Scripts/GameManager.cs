@@ -11,13 +11,20 @@ public class GameManager : MonoBehaviour {
 
 	public Player player;
 
-	//game screen lables
+	//game screen labels
 	public Text lastWin_lbl;
 	public Text placedBetsTotal_lbl;
 	public Text score_lbl;
 	private const int MAX_NUMBER_HIGHSCORES = 5;
 
+
+	public int winningNumber = -1;//For Simon to set from Animation screen
+
+	/* winningNumber is checked when the game screen loads (after returning from animation 
+	 * scene), if it is between 0 - 36 winnings are processed then it is set back to -1 */
+
 	private GameObject tableObj;
+
 
 	void Awake () {
 		KeepAlive ();
@@ -31,6 +38,20 @@ public class GameManager : MonoBehaviour {
 		} else {
 			Destroy (gameObject);
 		}
+	}
+	//clears losing bets and paysout winnings
+	public void ProcessWinningNumber(Board board, int winNumber){
+		board.StoreAllPlacedChipInfo ();
+		board.ClearLosingBets (winNumber);
+		board.PayoutWinnings (winNumber, player);
+		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
+		RefreshScorePanel ();
+		//reset the winning number flag
+		this.winningNumber = -1;
+	}
+
+	public void ProcessWinningNumber(Board board){
+		ProcessWinningNumber (board, this.winningNumber);
 	}
 
 	public void RefreshScorePanel(){
