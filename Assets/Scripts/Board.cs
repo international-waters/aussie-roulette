@@ -25,9 +25,11 @@ public class Board : MonoBehaviour {
 	void Awake () {
 		//game must be started from the start screen in order to create the peristant
 		//game manager object
-		if (GameObject.Find ("GameManager") == null){
+		if (GameObject.Find ("GameManager") == null) {
 			Destroy (gameObject);
 			SceneManager.LoadScene ("StartScreen");
+		} else {
+			game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		}
 		//singleton pattern for keeping alive accross scenes
 		if (instance == null) {
@@ -49,28 +51,19 @@ public class Board : MonoBehaviour {
 	void OnLevelWasLoaded(){
 		//Toggle table, bets etc active if gamescreen is loaded otherwise deactivate
 		bool isThisLevelLoaded = (SceneManager.GetActiveScene ().name == "GamePlayScreen") ? true : false;
-
-		//hide the roulette table
-		gameObject.GetComponent<SpriteRenderer>().enabled = isThisLevelLoaded;
-
-		//hide all the chips and stack counter labels etc.
 		foreach (Transform child in transform) {
 			if (child.name != "BetMarker(Clone)") {
 				child.gameObject.SetActive (isThisLevelLoaded);
 			}
 		}
+		//this should allow winning number to be processed upon return for the animation scene
+		//(not tested)
 		if (isThisLevelLoaded) {
-			//check to see if this screen is returning from a wheel spin
-			//and process the winning number
-			game = GameObject.Find("GameManager").GetComponent<GameManager>();
-			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
-
-				Text winLbl = GameObject.Find ("winningNumber").GetComponent<Text> ();
-				winLbl.text = game.winNumberFlag.ToString ();
-
-				game.ProcessWinNumber (this);
+			if (game.winningNumber >= 0 && game.winningNumber < 37) {
+				game.ProcessWinningNumber (this);
+				Text winLabel = GameObject.Find ("winningNumber").GetComponent<Text> ();
+				winLabel.text = game.winningNumber.ToString ();
 			}
-
 		}
 	}
 
