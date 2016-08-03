@@ -85,15 +85,7 @@ public class BoardBetSpace : MonoBehaviour {
 	public void PlaceChip(Player currentPlayer, int chipValue){
 		PlaceChip (currentPlayer,currentPlayer.playerName,false,chipValue);
 	}
-
-	public void PlaceChip(Player currentPlayer, int chipValue, bool animate){
-		PlaceChip (currentPlayer,currentPlayer.playerName,false,chipValue,animate);
-	}
-
 		
-	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo){
-		PlaceChip (currentPlayer, chipInfo.ownedByPlayer,false,chipInfo.value);
-	}
 
 	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo, bool animate){
 		PlaceChip (currentPlayer, chipInfo.ownedByPlayer,false,chipInfo.value, animate);
