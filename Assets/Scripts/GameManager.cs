@@ -11,11 +11,13 @@ public class GameManager : MonoBehaviour {
 
 	public Player player;
 
-	//game screen lables
+	//game screen labels
 	public Text lastWin_lbl;
 	public Text placedBetsTotal_lbl;
 	public Text score_lbl;
 	private const int MAX_NUMBER_HIGHSCORES = 5;
+
+	public int winNumberFlag = -1;
 
 	private GameObject tableObj;
 
@@ -32,6 +34,25 @@ public class GameManager : MonoBehaviour {
 			Destroy (gameObject);
 		}
 	}
+
+	public void ProcessWinNumber(Board board){
+		ProcessWinNumber (board, this.winNumberFlag);
+
+
+
+	}
+
+	public void ProcessWinNumber(Board board, int winNumber){
+		//record chip placement for repeat bet option
+		board.StoreAllPlacedChipInfo ();
+		board.ClearLosingBets (winNumber);
+		board.PayoutWinnings (winNumber, player);
+		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
+		RefreshScorePanel ();
+		//reset flag to default state
+		this.winNumberFlag = -1;
+	}
+
 
 	public void RefreshScorePanel(){
 		if (SceneManager.GetActiveScene ().name == "GamePlayScreen") {

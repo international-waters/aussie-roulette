@@ -10,6 +10,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour {
 
@@ -17,6 +18,7 @@ public class Board : MonoBehaviour {
 	public List<ChipInfo> savedChips;
 	public int SelectedChipValue = 1;
 	public bool isTakingBets;
+	private GameManager game;
 
 
 	public static Board instance { get; private set;}
@@ -47,13 +49,28 @@ public class Board : MonoBehaviour {
 	void OnLevelWasLoaded(){
 		//Toggle table, bets etc active if gamescreen is loaded otherwise deactivate
 		bool isThisLevelLoaded = (SceneManager.GetActiveScene ().name == "GamePlayScreen") ? true : false;
+
+		//hide the roulette table
+		gameObject.GetComponent<SpriteRenderer>().enabled = isThisLevelLoaded;
+
+		//hide all the chips and stack counter labels etc.
 		foreach (Transform child in transform) {
 			if (child.name != "BetMarker(Clone)") {
 				child.gameObject.SetActive (isThisLevelLoaded);
 			}
 		}
 		if (isThisLevelLoaded) {
-			//reload any resources and "wake up" the board
+			//check to see if this screen is returning from a wheel spin
+			//and process the winning number
+			game = GameObject.Find("GameManager").GetComponent<GameManager>();
+			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
+
+				Text winLbl = GameObject.Find ("winningNumber").GetComponent<Text> ();
+				winLbl.text = game.winNumberFlag.ToString ();
+
+				game.ProcessWinNumber (this);
+			}
+
 		}
 	}
 
