@@ -102,7 +102,8 @@ public class Board : MonoBehaviour {
 			BoardBetSpace betSpace = betSpaceObj.GetComponent<BoardBetSpace> ();
 			if (betSpace.winNumbers [0] == winNumber) {
 				if (betSpace.betSpaceType.betTypeEnum == BetTypeEnum.StraightUp) {
-					betView.DisplayWinMarker (betSpace.gameObject.transform.position);
+					
+					betView.DisplayWinMarker (betSpace.ChipPlacementPosition());
 				}
 			}
 		}
