@@ -58,20 +58,19 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	public void OnTestWinnerButtonClick(){
 		int winner = winNumber.value;
 		winnerlbl.text = winner.ToString ();
-		game.ProcessWinningNumber (board, winner);
+		game.ProcessWinNumber (board,winner);
 	} 
 
 	public void OnSpinButtonClick(){
-		//to delete (Simon)------------------------
 		int winner = (int)Mathf.Round(Random.Range (0f, 36f));
 		winnerlbl.text = winner.ToString ();
-		game.ProcessWinningNumber (board, winner);
-		//end of delete ----------------------------
+		game.ProcessWinNumber (board,winner);
 
-		//replace with------------------------------
-		//SceneManager.LoadScene("Animation Scene Name");
-		//end replace-------------------------------
 	} 
+
+	public void OnSpinDiffSceneButtonClick(){
+		SceneManager.LoadScene ("SpinTestScene");
+	}
 
 	public void OnLoadLastBetsButtonClick(){
 		board.ClearAllBets (game.player);
