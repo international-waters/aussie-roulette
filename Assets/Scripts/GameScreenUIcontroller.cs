@@ -58,13 +58,13 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	public void OnTestWinnerButtonClick(){
 		int winner = winNumber.value;
 		winnerlbl.text = winner.ToString ();
-		game.ProcessWinNumber (board,winner);
+		game.ProcessWinNumber (winner);
 	} 
 
 	public void OnSpinButtonClick(){
 		int winner = (int)Mathf.Round(Random.Range (0f, 36f));
 		winnerlbl.text = winner.ToString ();
-		game.ProcessWinNumber (board,winner);
+		game.ProcessWinNumber (winner);
 
 	} 
 

@@ -15,8 +15,11 @@ public class GameManager : MonoBehaviour {
 	public Text lastWin_lbl;
 	public Text placedBetsTotal_lbl;
 	public Text score_lbl;
+
+	private Board board;
 	private const int MAX_NUMBER_HIGHSCORES = 5;
 
+	//Use this to set the winning number from a spin in another scene
 	public int winNumberFlag = -1;
 
 	private GameObject tableObj;
@@ -35,14 +38,17 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void ProcessWinNumber(Board board){
-		ProcessWinNumber (board, this.winNumberFlag);
+	public void ProcessWinNumber(){
+		ProcessWinNumber (this.winNumberFlag);
 
 
 
 	}
 
-	public void ProcessWinNumber(Board board, int winNumber){
+	public void ProcessWinNumber(int winNumber){
+		if (board == null) {
+			board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
+		}
 		//record chip placement for repeat bet option
 		board.StoreAllPlacedChipInfo ();
 		board.ClearLosingBets (winNumber);
