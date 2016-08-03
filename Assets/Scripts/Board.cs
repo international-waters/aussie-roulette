@@ -68,7 +68,7 @@ public class Board : MonoBehaviour {
 				Text winLbl = GameObject.Find ("winningNumber").GetComponent<Text> ();
 				winLbl.text = game.winNumberFlag.ToString ();
 
-				game.ProcessWinNumber (this);
+				game.ProcessWinNumber ();
 			}
 
 		}

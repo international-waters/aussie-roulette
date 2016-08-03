@@ -45,6 +45,13 @@ public class BoardBetSpace : MonoBehaviour {
 		betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
 		placedChips = new List<GameObject> ();
 	}
+
+	//remove stack counter labels when there are no chips left on the betting spot
+	public void LateUpdate(){
+		if (placedChips.Count < 1) {
+			Destroy (chipCounterObj);
+		}
+	}
 		
 	private void PlaceChip(Player player, string playerName, int chipValue, bool isPayedFor){
 		if (placedChips.Count < STACK_LIMIT) {

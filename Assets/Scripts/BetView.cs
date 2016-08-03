@@ -88,9 +88,9 @@ public class BetView : MonoBehaviour {
 				betspace.chipCounterObj.GetComponent<TextMesh> ().text = chipCount.ToString ();
 
 			}
-			if (betspace.chipCounterObj != null && chipCount <= 0) {
-				betspace.chipCounterObj.SetActive(false);
-			}
+			/*if ( chipCount <= 0) {
+				Destroy(betspace.chipCounterObj);
+			}*/
 		}
 		game.RefreshScorePanel ();
 	}
