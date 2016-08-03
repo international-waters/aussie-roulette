@@ -78,13 +78,14 @@ public class Board : MonoBehaviour {
 
 	//this method clears all the chips owned by the player from the table and credits
 	//the player for each chip removed
-	public void ClearAllBets(Player playerToCredit)
+	public void ClearAllBets(Player playerToCredit,ChipMove chipMove = ChipMove.Disabled)
 	{
 		//iterate through the list of bet Spaces to find those that contain bets
+		bool animate = (chipMove != ChipMove.Disabled);
 		foreach (GameObject betSpaceObj in betSpaces) {
 			BoardBetSpace betSpace = betSpaceObj.GetComponent<BoardBetSpace> ();
 			if (playerToCredit != null) {
-				betSpace.RemoveAllChips (playerToCredit);
+				betSpace.RemoveAllChips (playerToCredit,chipMove);
 				playerToCredit.CurrentBetTotal = 0;
 			} else {
 				betSpace.RemoveAllChips ();
@@ -96,7 +97,19 @@ public class Board : MonoBehaviour {
 		ClearAllBets (null);
 	}
 
-	public void ClearLosingBets(int winningNumber){
+	public void DisplayWinMarker(int winNumber, BetView betView){
+		foreach (GameObject betSpaceObj in betSpaces) {
+			BoardBetSpace betSpace = betSpaceObj.GetComponent<BoardBetSpace> ();
+			if (betSpace.winNumbers [0] == winNumber) {
+				if (betSpace.betSpaceType.betTypeEnum == BetTypeEnum.StraightUp) {
+					
+					betView.DisplayWinMarker (betSpace.ChipPlacementPosition());
+				}
+			}
+		}
+	}
+
+	public void ClearLosingBets(int winningNumber, bool animate = false){
 		foreach (GameObject betSpaceObj in betSpaces)
 		{
 			BoardBetSpace betSpace = betSpaceObj.GetComponent<BoardBetSpace> ();
@@ -109,7 +122,11 @@ public class Board : MonoBehaviour {
 				}
 			}
 			if (!winningSpace) {
-				betSpace.RemoveAllChips ();
+				if (!animate) {
+					betSpace.RemoveAllChips ();
+				} else {
+					betSpace.RemoveAllChips (ChipMove.ToDealer);
+				}
 			}
 		}
 	}

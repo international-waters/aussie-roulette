@@ -17,11 +17,17 @@ public class GameManager : MonoBehaviour {
 	public Text score_lbl;
 
 	private Board board;
+	private BetView betView;
+	private GameObject winMarker;
 	private const int MAX_NUMBER_HIGHSCORES = 5;
 
 	//Use this to set the winning number from a spin in another scene
 	public int winNumberFlag = -1;
 
+	//Seconds to wait after spin before clearing losing numbers and processing
+	public float winDelaySeconds = 2f;
+	//marker stay on the board a bit longer after losing chips are cleared
+	public float winMarkerExtraDelay = 2f;
 	private GameObject tableObj;
 
 	void Awake () {
@@ -38,25 +44,39 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	IEnumerator HideWinMarker(){
+		yield return new WaitForSeconds (winMarkerExtraDelay);
+		betView.HideWinMarker ();
+	}
+
+	IEnumerator ProcessWinAfterDelay(int winNumber, BetView betView){
+		board.isTakingBets = false;
+		board.DisplayWinMarker (winNumber,betView);
+		yield return new WaitForSeconds (winDelaySeconds);
+		board.ClearLosingBets (winNumber,true);
+		board.PayoutWinnings (winNumber, player);
+		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
+		RefreshScorePanel ();
+		StartCoroutine (HideWinMarker());
+		//reset flag to default state
+		this.winNumberFlag = -1;
+		board.isTakingBets = true;
+	}
+
 	public void ProcessWinNumber(){
 		ProcessWinNumber (this.winNumberFlag);
-
-
-
 	}
 
 	public void ProcessWinNumber(int winNumber){
 		if (board == null) {
 			board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
 		}
+		if (betView == null) {
+			betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
+		}
 		//record chip placement for repeat bet option
 		board.StoreAllPlacedChipInfo ();
-		board.ClearLosingBets (winNumber);
-		board.PayoutWinnings (winNumber, player);
-		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
-		RefreshScorePanel ();
-		//reset flag to default state
-		this.winNumberFlag = -1;
+		StartCoroutine (ProcessWinAfterDelay (winNumber, betView));
 	}
 
 

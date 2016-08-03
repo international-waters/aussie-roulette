@@ -53,7 +53,7 @@ public class BoardBetSpace : MonoBehaviour {
 		}
 	}
 		
-	private void PlaceChip(Player player, string playerName, int chipValue, bool isPayedFor){
+	private void PlaceChip(Player player, string playerName,bool isPayedFor,int chipValue,bool animate = false){
 		if (placedChips.Count < STACK_LIMIT) {
 			bool isChipPayedFor = false;
 
@@ -67,7 +67,7 @@ public class BoardBetSpace : MonoBehaviour {
 			}
 			if (isChipPayedFor) {
 				// place the chip GameObject on the table and get a reference to it
-				GameObject chipObject = betView.PlaceChip (ChipPlacementPosition ());
+				GameObject chipObject = betView.PlaceChip (ChipPlacementPosition (),animate);
 				Chip chipDetails = chipObject.GetComponent<Chip> ();
 				if (player != null) {
 					chipDetails.ownedByPlayer = player.playerName;
@@ -83,14 +83,22 @@ public class BoardBetSpace : MonoBehaviour {
 	}
 
 	public void PlaceChip(Player currentPlayer, int chipValue){
-		PlaceChip (currentPlayer,currentPlayer.playerName,chipValue, false);
-	}
-		
-	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo){
-		PlaceChip (currentPlayer, chipInfo.ownedByPlayer, chipInfo.value, false);
+		PlaceChip (currentPlayer,currentPlayer.playerName,false,chipValue);
 	}
 
-	public void RemoveLastPlacedChip(Player player){
+	public void PlaceChip(Player currentPlayer, int chipValue, bool animate){
+		PlaceChip (currentPlayer,currentPlayer.playerName,false,chipValue,animate);
+	}
+
+		
+	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo){
+		PlaceChip (currentPlayer, chipInfo.ownedByPlayer,false,chipInfo.value);
+	}
+
+	public void PlaceChip(Player currentPlayer, ChipInfo chipInfo, bool animate){
+		PlaceChip (currentPlayer, chipInfo.ownedByPlayer,false,chipInfo.value, animate);
+	}
+	public void RemoveLastPlacedChip(Player player, bool animate = false){
 		if (placedChips.Count > 0) {
 			Chip lastChip; 
 			for (int i = placedChips.Count-1; i >= 0; i--) {
@@ -99,7 +107,11 @@ public class BoardBetSpace : MonoBehaviour {
 					GameObject chipObject = placedChips [i];
 					player.SellChip (lastChip.Value);
 					placedChips.RemoveAt (i);
-					Destroy (chipObject);
+					if (animate) {
+						lastChip.ClearChip = ChipMove.ToPlayer;
+					} else {
+						Destroy (chipObject);
+					}
 					betView.UpdateStackCounter (this);
 					break;
 				}
@@ -107,9 +119,15 @@ public class BoardBetSpace : MonoBehaviour {
 		}
 	}
 	//Remove all chips, no player is credited, used for losing numbers and for clearing the board
-	public void RemoveAllChips(){
+	public void RemoveAllChips(ChipMove chipMove = ChipMove.Disabled){
+		bool animate = (chipMove != ChipMove.Disabled);
 		for (int i = placedChips.Count-1; i >= 0; i--){
-			Destroy (placedChips [i]);
+			if (!animate) {
+				Destroy (placedChips [i]);
+			} else {
+				Chip chip = placedChips [i].GetComponent<Chip> ();
+				chip.ClearChip = chipMove;
+			}
 		}
 		placedChips = new List<GameObject> ();
 		betView.UpdateStackCounter (this);
@@ -117,15 +135,22 @@ public class BoardBetSpace : MonoBehaviour {
 
 	//Remove all chips, specifed player is credited
 	//TODO: will need a player[] version if more than one player is implemented
-	public void RemoveAllChips(Player playerToCredit){
+	public void RemoveAllChips(Player playerToCredit, ChipMove chipMove = ChipMove.Disabled){
+		bool animate = (chipMove != ChipMove.Disabled);
 		for (int i = placedChips.Count-1; i >= 0; i--)
 		{
 			Chip chip = placedChips[i].GetComponent<Chip> ();
 			GameObject chipObject = placedChips [i];
 			if (chip.ownedByPlayer == playerToCredit.playerName) {
 				playerToCredit.SellChip (chip.Value);
+				if (animate) {
+					chip.ClearChip = chipMove;
+				} else {
+					Destroy (chipObject);
+				}
+			} else {
+				Destroy (chipObject);
 			}
-			Destroy (chipObject);
 		}
 		placedChips = new List<GameObject> ();
 		betView.UpdateStackCounter (this);
