@@ -79,7 +79,7 @@ public class BetController : MonoBehaviour {
     *****************************************************************************/
 	void OnMouseOver(){
 		if (Input.GetMouseButtonDown (1) && isValidBetPosition && board.isTakingBets) {
-			betSpace.RemoveLastPlacedChip (game.player);
+			betSpace.RemoveLastPlacedChip (game.player,true);
 		}
 	}
 }

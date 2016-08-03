@@ -22,6 +22,7 @@ public class BetView : MonoBehaviour {
 	private GameObject betMarker;
 	private GameObject chipPrefab;
 	private GameObject chipTextPrefab;
+	private GameObject winMarker;
 	private GameObject stackCounter;
 
 
@@ -33,15 +34,30 @@ public class BetView : MonoBehaviour {
 		GameObject markerPrefab = Resources.Load<GameObject>("prefabs/BetMarker");
 		chipPrefab = Resources.Load<GameObject>("prefabs/BetChip");
 		chipTextPrefab = Resources.Load<GameObject>("prefabs/ChipText");
-
+		GameObject winMarkerPrefab = Resources.Load<GameObject> ("prefabs/WinMarker");
 
 		//instantiate and hide the bet marker
 		betMarker = (GameObject) Instantiate (markerPrefab,new Vector3(), Quaternion.identity);
 		betMarker.transform.parent = transform;
 		betMarker.SetActive (false);
 
+		//instantiate and hide the bet marker
+		winMarker = (GameObject) Instantiate (winMarkerPrefab,new Vector3(), Quaternion.identity);
+		winMarker.transform.parent = transform;
+		winMarker.SetActive (false);
 
 	}
+	//Displays an marker on the win number (auto hide script is on perfab)
+	public void DisplayWinMarker(Vector3 numberPosition){
+		winMarker.transform.position = numberPosition;
+		winMarker.SetActive (true);
+	}
+
+	public void HideWinMarker(){
+		winMarker.SetActive (false);
+	}
+
+
 	/****************************************************************************
     * This method enables the bet placement marker to be deactivated
     *****************************************************************************/
@@ -62,7 +78,7 @@ public class BetView : MonoBehaviour {
     * This method places a new chip on the table
 	* returns a GameObject containing a reference to this chip
     *****************************************************************************/
-	public GameObject PlaceChip(Vector3 position){
+	public GameObject PlaceChip(Vector3 position, bool animate = false){
 		GameObject ChipObj = (GameObject)Instantiate (chipPrefab, position,Quaternion.identity);
 		ChipObj.transform.parent = this.transform;
 		return ChipObj;
@@ -88,9 +104,6 @@ public class BetView : MonoBehaviour {
 				betspace.chipCounterObj.GetComponent<TextMesh> ().text = chipCount.ToString ();
 
 			}
-			/*if ( chipCount <= 0) {
-				Destroy(betspace.chipCounterObj);
-			}*/
 		}
 		game.RefreshScorePanel ();
 	}

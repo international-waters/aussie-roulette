@@ -51,7 +51,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 
 	public void OnClearBetsButtonCick(){
 		board.StoreAllPlacedChipInfo ();
-		board.ClearAllBets (game.player);
+		board.ClearAllBets (game.player, ChipMove.ToPlayer);
 		game.RefreshScorePanel ();
 	}
 

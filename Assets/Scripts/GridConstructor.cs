@@ -9,7 +9,6 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//x.277, y.356
 
 public class GridConstructor: MonoBehaviour {
 	
