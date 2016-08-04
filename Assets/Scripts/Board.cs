@@ -55,7 +55,7 @@ public class Board : MonoBehaviour {
 
 		//hide all the chips and stack counter labels etc.
 		foreach (Transform child in transform) {
-			if (child.name != "BetMarker(Clone)") {
+			if (child.name != "BetMarker(Clone)" && child.name != "WinMarker(Clone)") {
 				child.gameObject.SetActive (isThisLevelLoaded);
 			}
 		}
