@@ -53,16 +53,16 @@ public class GameManager : MonoBehaviour {
 	}
 
 	IEnumerator ProcessWinAfterDelay(int winNumber, BetView betView){
-		board.isTakingBets = false;
-		board.DisplayWinMarker (winNumber,betView);
+
 		yield return new WaitForSeconds (winDelaySeconds);
-		board.ClearLosingBets (winNumber,true);
+		board.ClearLosingBets (winNumber, true);
 		board.PayoutWinnings (winNumber, player);
 		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
 		RefreshScorePanel ();
-		StartCoroutine (HideWinMarker());
+		StartCoroutine (HideWinMarker ());
 		//reset flag to default state
 		this.winNumberFlag = -1;
+
 	}
 
 	public void ProcessWinNumber(){
@@ -78,6 +78,8 @@ public class GameManager : MonoBehaviour {
 		}
 		//record chip placement for repeat bet option
 		board.StoreAllPlacedChipInfo ();
+		board.isTakingBets = false;
+		board.DisplayWinMarker (winNumber,betView);
 		StartCoroutine (ProcessWinAfterDelay (winNumber, betView));
 	}
 

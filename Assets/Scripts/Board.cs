@@ -66,6 +66,7 @@ public class Board : MonoBehaviour {
 			game = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
 				game.ProcessWinNumber ();
+				game.winNumberFlag = -1;
 			}
 
 		}

@@ -15,8 +15,6 @@ using System.Collections.Generic;
 public class GameScreenUIcontroller : MonoBehaviour {
 	private Board board;
 	private Dropdown winNumber;
-	private Text winnerlbl;
-	private Dropdown chipValueList;
 	private GameManager game;
 	private BetView betView;
 	private BetController betController;
@@ -36,8 +34,6 @@ public class GameScreenUIcontroller : MonoBehaviour {
 		board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
 		try{
 		winNumber = GameObject.Find("winNumberDropdown").GetComponent<Dropdown>();
-		winnerlbl = GameObject.Find("winningNumber").GetComponent<Text>();
-		chipValueList = GameObject.Find("ChipValueList").GetComponent<Dropdown>();
 		}
 		catch{
 		} 
@@ -103,7 +99,6 @@ public class GameScreenUIcontroller : MonoBehaviour {
 
 	public void OnTestWinnerButtonClick(){
 		int winner = winNumber.value;
-		winnerlbl.text = winner.ToString ();
 		game.ProcessWinNumber (winner);
 	} 
 
