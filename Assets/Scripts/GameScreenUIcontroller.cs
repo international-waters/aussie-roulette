@@ -20,13 +20,37 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	private GameManager game;
 	private BetView betView;
 	private BetController betController;
+	public Toggle leaveBetsToggle;
+	public Toggle lowValueToggle;
+	public Toggle midValueToggle;
+	public Toggle highValueToggle;
+	private Text lowValueToggleTxt;
+	private Text midValueToggleTxt;
+	private Text highValueToggleTxt;
+
+	private Toggle[] chipValueToggles;
+	private Text[] chipValueTogglesTxt;
 
 	void Start(){
 		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
+		try{
 		winNumber = GameObject.Find("winNumberDropdown").GetComponent<Dropdown>();
 		winnerlbl = GameObject.Find("winningNumber").GetComponent<Text>();
 		chipValueList = GameObject.Find("ChipValueList").GetComponent<Dropdown>();
+		}
+		catch{
+		} 
+		lowValueToggleTxt = GameObject.Find("LowValueToggleTxt").GetComponent<Text>();
+		midValueToggleTxt = GameObject.Find("MidValueToggleTxt").GetComponent<Text>();
+		highValueToggleTxt = GameObject.Find("HighValueToggleTxt").GetComponent<Text>();
+
+		chipValueToggles = new Toggle[3]{ lowValueToggle, midValueToggle, highValueToggle };
+		chipValueTogglesTxt = new Text[3]{ lowValueToggleTxt, midValueToggleTxt, highValueToggleTxt };
+			
+		initValueToggles ();
+		leaveBetsToggle.isOn = board.isRepeatingBets;
+
 		game.RefreshScorePanel ();
 	}
 		
@@ -49,6 +73,28 @@ public class GameScreenUIcontroller : MonoBehaviour {
 		board.ClearStoredChipHistory ();
 	}
 
+	public void OnChipValueChanged(){
+		for (int i = 0; i < 3; i++) {
+			Text valueText = chipValueTogglesTxt[i].GetComponent<Text> ();
+			if (chipValueToggles [i].isOn == true) {
+				valueText.color = Color.yellow;
+				int newChipValue = int.Parse (valueText.text);
+				//save location of all bets
+				board.StoreAllPlacedChipInfo ();
+				//clear current bets and credit the player
+				board.ClearAllBets (game.player);
+				board.SelectedChipValue = newChipValue;
+				//attempt to replace all bets at the new value 
+				//(will not succeed if player cannot afford all bets)
+				board.PlaceAllStoredChips (game.player,newChipValue);
+				game.RefreshScorePanel ();
+
+			} else {
+				valueText.color = Color.white;
+			}
+		}
+	}
+
 	public void OnClearBetsButtonCick(){
 		board.StoreAllPlacedChipInfo ();
 		board.ClearAllBets (game.player, ChipMove.ToPlayer);
@@ -63,7 +109,6 @@ public class GameScreenUIcontroller : MonoBehaviour {
 
 	public void OnSpinButtonClick(){
 		int winner = (int)Mathf.Round(Random.Range (0f, 36f));
-		winnerlbl.text = winner.ToString ();
 		game.ProcessWinNumber (winner);
 
 	} 
@@ -71,36 +116,25 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	public void OnSpinDiffSceneButtonClick(){
 		SceneManager.LoadScene ("SpinTestScene");
 	}
-
-	public void OnLoadLastBetsButtonClick(){
-		board.ClearAllBets (game.player);
-		board.PlaceAllStoredChips(game.player,board.SelectedChipValue);
-		game.RefreshScorePanel ();
-	}
-
-	public void OnChipValueListChanged(){
-
-		int value = 1;
-		switch (chipValueList.value) {
-		case 0:
-			break;
-		case 1:
-			value = 5;
-			break;
-		case 2:
-			value = 10;
-			break;
-		case 3:
-			value = 25;
-			break;
 		
-		case 4:
-			value = 50;
+
+	public void OnRepeatLastBetsChanged(){
+		board.isRepeatingBets = leaveBetsToggle.isOn;
+	}
+		
+
+	public void initValueToggles(){
+		switch (board.SelectedChipValue) {
+		case(5):
+			midValueToggle.isOn = true;
+			break;
+		case(10):
+			highValueToggle.isOn = true;
+			break;
+		default:
+			lowValueToggle.isOn = true;
 			break;
 		}
-		board.ClearAllBets (game.player);
-		board.SelectedChipValue = value;
-		game.RefreshScorePanel ();
 	}
 		
 }
