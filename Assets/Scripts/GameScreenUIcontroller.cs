@@ -68,6 +68,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 		game.player.CurrentBetTotal = board.CalculatePlayersTotalBet (game.player);
 		game.RefreshScorePanel ();
 		board.ClearStoredChipHistory ();
+		this.initValueToggles ();
 	}
 
 	public void OnChipValueChanged(){

@@ -210,6 +210,10 @@ public class GameManager : MonoBehaviour {
 			board.savedChips = savedChips;
 			board.PlaceAllStoredChips(player);
 		}
+		//set the selected board value to match the loaded chips value
+		if (board.savedChips.Count > 0) {
+			board.SelectedChipValue = board.savedChips [1].value;
+		}
 		board.ClearStoredChipHistory ();
 		return player;
 	}
