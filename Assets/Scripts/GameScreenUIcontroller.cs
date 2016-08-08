@@ -58,8 +58,9 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	public void OnSaveButtonClick(){
 		
 		game.SaveGame(game.player, board);
-		board.ClearAllBets ();
-		game.RefreshScorePanel ();
+		//reload saved game (saving clears the board);
+		OnLoadButtonClick();
+
 	}
 
 	public void OnLoadButtonClick(){
