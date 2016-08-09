@@ -19,7 +19,7 @@ public class Chip : MonoBehaviour {
 	public string ownedByPlayer;
 	public int betSpaceId = -1;
 	public int spriteSortOrder = 3;
-	private const float MOVESPEED = 15f;
+	private const float MOVESPEED = 10f;
 	public Sprite[] sprites;
 	private Vector3 DealerTargetPos;
 	private Vector3 PlayerTargetPos;
@@ -43,9 +43,10 @@ public class Chip : MonoBehaviour {
 	public void Start() {
 		//SetSpriteByChipValue ();
 		spriteRenderer.sortingOrder = spriteSortOrder;
-		DealerTargetPos = new Vector3 (UnityEngine.Random.Range(-1f,-3f),3f,0f);
+		DealerTargetPos = new Vector3 (UnityEngine.Random.Range(-1f,-3f),
+			UnityEngine.Random.Range(2.7f,4f),0f);
 		//PlayerTargetPos = new Vector3 (UnityEngine.Random.Range(-4f,-7f),-5f,0f);
-		PlayerTargetPos = new Vector3 (UnityEngine.Random.Range(4f,7f),-5f,0f);
+		PlayerTargetPos = new Vector3 (UnityEngine.Random.Range(-1f,7f),-5f,0f);
 	}
 
 	public void Update() {

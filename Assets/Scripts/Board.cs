@@ -16,8 +16,9 @@ public class Board : MonoBehaviour {
 
 	public List<GameObject> betSpaces;
 	public List<ChipInfo> savedChips;
-	public int SelectedChipValue = 1;
+	public int SelectedChipValue;
 	public bool isTakingBets;
+	public bool isRepeatingBets;
 	private GameManager game;
 
 
@@ -64,11 +65,8 @@ public class Board : MonoBehaviour {
 			//and process the winning number
 			game = GameObject.Find("GameManager").GetComponent<GameManager>();
 			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
-
-				Text winLbl = GameObject.Find ("winningNumber").GetComponent<Text> ();
-				winLbl.text = game.winNumberFlag.ToString ();
-
 				game.ProcessWinNumber ();
+				game.winNumberFlag = -1;
 			}
 
 		}
@@ -81,7 +79,6 @@ public class Board : MonoBehaviour {
 	public void ClearAllBets(Player playerToCredit,ChipMove chipMove = ChipMove.Disabled)
 	{
 		//iterate through the list of bet Spaces to find those that contain bets
-		bool animate = (chipMove != ChipMove.Disabled);
 		foreach (GameObject betSpaceObj in betSpaces) {
 			BoardBetSpace betSpace = betSpaceObj.GetComponent<BoardBetSpace> ();
 			if (playerToCredit != null) {
@@ -184,10 +181,11 @@ public class Board : MonoBehaviour {
 		player.RecieveWinnings (winnings);;
 	}
 
-	public void PlaceAllStoredChips(Player CurrentPlayer, int newChipValue = 0){
+	public bool PlaceAllStoredChips(Player CurrentPlayer, int newChipValue = 0){
 		//clear any bets from the table and credit player
 		ClearAllBets(CurrentPlayer);
 		//check that player can afford to place all of the bets
+		bool areBetsPlaced = false;
 		if (CurrentPlayer.Wallet >= this.CalcTotalSavedBetValue (CurrentPlayer, newChipValue)) {
 
 			foreach (ChipInfo chip in savedChips) {
@@ -199,7 +197,9 @@ public class Board : MonoBehaviour {
 					betSpace.PlaceChip (CurrentPlayer, newChipValue);
 				}
 			}
+			areBetsPlaced = true;
 		}
+		return areBetsPlaced;
 	}
 
 	public void ClearStoredChipHistory(){

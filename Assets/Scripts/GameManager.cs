@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour {
 	public Text lastWin_lbl;
 	public Text placedBetsTotal_lbl;
 	public Text score_lbl;
+	private Toggle leaveBetsToggle;
 
 	private Board board;
 	private BetView betView;
@@ -47,20 +48,21 @@ public class GameManager : MonoBehaviour {
 	IEnumerator HideWinMarker(){
 		yield return new WaitForSeconds (winMarkerExtraDelay);
 		betView.HideWinMarker ();
+		board.isTakingBets = true;
+		this.ProcessRepeatBets ();
 	}
 
 	IEnumerator ProcessWinAfterDelay(int winNumber, BetView betView){
-		board.isTakingBets = false;
-		board.DisplayWinMarker (winNumber,betView);
+
 		yield return new WaitForSeconds (winDelaySeconds);
-		board.ClearLosingBets (winNumber,true);
+		board.ClearLosingBets (winNumber, true);
 		board.PayoutWinnings (winNumber, player);
 		player.CurrentBetTotal = board.CalculatePlayersTotalBet (player);
 		RefreshScorePanel ();
-		StartCoroutine (HideWinMarker());
+		StartCoroutine (HideWinMarker ());
 		//reset flag to default state
 		this.winNumberFlag = -1;
-		board.isTakingBets = true;
+
 	}
 
 	public void ProcessWinNumber(){
@@ -76,6 +78,8 @@ public class GameManager : MonoBehaviour {
 		}
 		//record chip placement for repeat bet option
 		board.StoreAllPlacedChipInfo ();
+		board.isTakingBets = false;
+		board.DisplayWinMarker (winNumber,betView);
 		StartCoroutine (ProcessWinAfterDelay (winNumber, betView));
 	}
 
@@ -86,6 +90,17 @@ public class GameManager : MonoBehaviour {
 			lastWin_lbl.text = player.LastWin.ToString();
 			placedBetsTotal_lbl.text = player.CurrentBetTotal.ToString();
 			score_lbl.text = player.Wallet.ToString();
+		}
+	}
+
+	public void ProcessRepeatBets(){
+		if (leaveBetsToggle == null) {
+			leaveBetsToggle = GameObject.Find ("LeaveBetsToggle").GetComponent<Toggle> ();
+		}
+		if (board.isRepeatingBets) {
+			//turns option off if player cannot afford repeat bets
+			board.isRepeatingBets = board.PlaceAllStoredChips (player);
+			leaveBetsToggle.isOn = board.isRepeatingBets;
 		}
 	}
 
@@ -194,6 +209,10 @@ public class GameManager : MonoBehaviour {
 			reader.Close ();
 			board.savedChips = savedChips;
 			board.PlaceAllStoredChips(player);
+		}
+		//set the selected board value to match the loaded chips value
+		if (board.savedChips.Count > 0) {
+			board.SelectedChipValue = board.savedChips [1].value;
 		}
 		board.ClearStoredChipHistory ();
 		return player;

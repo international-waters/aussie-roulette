@@ -25,11 +25,14 @@ public class SpinTestScript : MonoBehaviour {
 		//set the game managers win number flag so that it will be processed
 		//when returning to main game screen
 		game.winNumberFlag = randWinner;
+		StartCoroutine (ReturnToGame ());
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+
+	//auto return to game screen
+	IEnumerator ReturnToGame(){
+		yield return new WaitForSeconds (2f);
+		SceneManager.LoadScene ("GamePlayScreen");
 	}
 }
