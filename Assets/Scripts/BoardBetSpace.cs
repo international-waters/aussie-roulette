@@ -39,13 +39,13 @@ public class BoardBetSpace : MonoBehaviour {
 			}
 		}
 	}
-		
-	void Start () {
-		betSpaceType = this.GetComponent<BoardBetSpaceType> ();
+
+	void Awake(){
 		betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
+		betSpaceType = this.GetComponent<BoardBetSpaceType> ();
 		placedChips = new List<GameObject> ();
 	}
-
+		
 	//remove stack counter labels when there are no chips left on the betting spot
 	public void LateUpdate(){
 		if (placedChips.Count < 1) {

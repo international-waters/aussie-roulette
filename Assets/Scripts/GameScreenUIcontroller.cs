@@ -16,6 +16,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	private Board board;
 	private Dropdown winNumber;
 	private GameManager game;
+	private GameObject tableObj;
 	private BetView betView;
 	private BetController betController;
 	public Toggle leaveBetsToggle;
@@ -32,6 +33,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	void Start(){
 		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
 		board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
+		tableObj = GameObject.Find ("RouletteTable");
 		try{
 		winNumber = GameObject.Find("winNumberDropdown").GetComponent<Dropdown>();
 		}
@@ -51,12 +53,16 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	}
 		
 
-	public void OnBackButtonClick(){
+	public void OnExitButtonClick(){
+		game.SaveGame(game.player, board);
+		game.selectedPlayerName = string.Empty;
+		game.player = new Player ();
+		DestroyObject (tableObj);
 		SceneManager.LoadScene ("StartScreen");
+
 	}
 
 	public void OnSaveButtonClick(){
-		
 		game.SaveGame(game.player, board);
 		//reload saved game (saving clears the board);
 		OnLoadButtonClick();
