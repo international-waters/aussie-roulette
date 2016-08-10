@@ -31,6 +31,7 @@ public class PlayerListController : MonoBehaviour {
 		toogleGroup = gameObject.GetComponent<ToggleGroup> ();
 		listItems = new List<GameObject> ();
 		playerList = game.GetSavedPlayers ();
+		playerList.Reverse ();
 		RefreshPlayerList ();
 	}
 	// Update is called once per frame
