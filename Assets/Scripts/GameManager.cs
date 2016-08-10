@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System;
+using System.Globalization;
 
 public class GameManager : MonoBehaviour {
 	public static GameManager instance { get; private set;}
@@ -17,6 +19,8 @@ public class GameManager : MonoBehaviour {
 	public Text score_lbl;
 	private Toggle leaveBetsToggle;
 
+	public string selectedPlayerName;
+
 	private Board board;
 	private BetView betView;
 	private GameObject winMarker;
@@ -27,9 +31,11 @@ public class GameManager : MonoBehaviour {
 
 	//Seconds to wait after spin before clearing losing numbers and processing
 	public float winDelaySeconds = 2f;
-	//marker stay on the board a bit longer after losing chips are cleared
+	//marker stays on the board a bit longer after losing chips are cleared
 	public float winMarkerExtraDelay = 2f;
 	private GameObject tableObj;
+
+	public bool loadGameOnStart = false;
 
 	void Awake () {
 		KeepAlive ();
@@ -121,6 +127,25 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public List<Player> GetSavedPlayers(){
+		List<Player> players = new List<Player> ();
+		foreach (string playerName in SavedGameList()) {
+			string playerData = PlayerPrefs.GetString (playerName);
+			//player not found, return a new player with name = playerName
+			Player tempPlayer;
+			if (playerData == string.Empty) {
+				tempPlayer = new Player (playerName);
+			} else {
+				StringReader reader = new StringReader (playerData);
+				tempPlayer = JsonUtility.FromJson<Player> (reader.ReadLine ());
+				reader.Close ();
+			}
+			players.Add (tempPlayer);
+		}
+		return players;
+	}
+
+
 	public string[] SavedGameList(){
 		char[] sep = new char[1]{ ',' };//just to get remove empty entries working
 		return PlayerPrefs.GetString ("SavedGamesList").Split (
@@ -132,8 +157,15 @@ public class GameManager : MonoBehaviour {
 			this.SaveGameToFile (player, board);
 			return;
 		}
+		if (board == null) {
+			board = GameObject.Find ("RouletteTable").GetComponent<Board> ();
+		}
 		DeleteSavedGame (player.playerName);
 
+		//string date = DateTime.Now.ToString("G",CultureInfo.CreateSpecificCulture("en-au"));
+		string date = DateTime.Now.ToString(@"dd/MM/yyyy HH:mm tt");
+		//string date = "";
+		player.lastSaveTime = date;
 		board.ClearStoredChipHistory ();
 
 		//save all the bets player has on the table to bet history (used to repeat bets)
@@ -143,7 +175,9 @@ public class GameManager : MonoBehaviour {
 		//of all chips they have on the table as well as their wallet balance.
 		board.ClearAllBets(player);
 		StringBuilder sb = new StringBuilder ();
-		sb.AppendLine (JsonUtility.ToJson(player));
+		string temp = JsonUtility.ToJson (player);
+		sb.AppendLine (temp);
+		//sb.AppendLine (JsonUtility.ToJson(player));
 
 		//write all saved chip information
 		foreach(ChipInfo chip in board.savedChips){
@@ -187,20 +221,25 @@ public class GameManager : MonoBehaviour {
 		if (!usePlayerPrefs){
 			return LoadGameFromFile (playerName, board);
 		}
+
+		if (betView == null) {
+			betView = GameObject.Find ("RouletteTable").GetComponent<BetView> ();
+		}
+
 		//Create default list of players for testing
 		if (PlayerPrefs.GetString ("SavedGamesList") == string.Empty) {
 			PlayerPrefs.SetString ("SavedGamesList", "Simon,Scott,Dave,Aaron,Jeremy,"); 
 		}
 		board.ClearAllBets ();
-		Player player;
+		Player tempPlayer;
 		string playerData = PlayerPrefs.GetString (playerName);
 		//player not found, return a new player with name = playerName
 		if (playerData == string.Empty) {
-			player = new Player (playerName);
+			tempPlayer = new Player (playerName);
 		} else {
 			StringReader reader = new StringReader (playerData);
 			List<ChipInfo> savedChips = new List<ChipInfo> ();
-			player = JsonUtility.FromJson<Player> (reader.ReadLine());
+			tempPlayer = JsonUtility.FromJson<Player> (reader.ReadLine());
 			string line;
 			while ((line = reader.ReadLine ()) != null) {
 				ChipInfo chip = JsonUtility.FromJson<ChipInfo> (line);
@@ -208,15 +247,16 @@ public class GameManager : MonoBehaviour {
 			}
 			reader.Close ();
 			board.savedChips = savedChips;
-			board.PlaceAllStoredChips(player);
+			board.PlaceAllStoredChips(tempPlayer);
 		}
 		//set the selected board value to match the loaded chips value
 		if (board.savedChips.Count > 0) {
 			board.SelectedChipValue = board.savedChips [1].value;
 		}
 		board.ClearStoredChipHistory ();
-		return player;
+		return tempPlayer;
 	}
+		
 
 
 	//load game from file system
@@ -261,27 +301,34 @@ public class GameManager : MonoBehaviour {
 		List<HighScore> list = LoadHighScores ();
 		HighScore playerScore = new HighScore (playerName, score);
 		bool needToSave = false;
-
+		bool playerExists = false;
 		foreach (HighScore highScore in list) {
 			if (highScore.playerName == playerName) {
-				highScore.score = score;
-				list.Sort ();
-				needToSave = true;
+				if (score >= highScore.score) {
+					highScore.score = score;
+					list.Sort ();
+					needToSave = true;
+				}
+				playerExists = true;
 				break;
 			}
 		}
 		//add to list if limit not reached
 		if (!needToSave && list.Count < MAX_NUMBER_HIGHSCORES) {
-			list.Add (playerScore);
-			list.Sort ();
-			needToSave = true;
+			if (!playerExists) {
+				list.Add (playerScore);
+				list.Sort ();
+				needToSave = true;
+			}
 
 		//list is already sorted with lowest score at the bottom
 		} else if (!needToSave && score > list [list.Count - 1].score) {
-			list.Add (playerScore);
-			list.Sort ();
-			list.RemoveAt (list.Count - 1);
-			needToSave = true;
+			if (!playerExists) {
+				list.Add (playerScore);
+				list.Sort ();
+				list.RemoveAt (list.Count - 1);
+				needToSave = true;
+			}
 			
 		}
 		if (needToSave) {
@@ -321,17 +368,43 @@ public class GameManager : MonoBehaviour {
 	private void createDefaultHighScores(){
 
 		List<HighScore> list = new List<HighScore> ();
-		list.Add(new HighScore("Jeremy", 125));
 		list.Add(new HighScore("Simon", 205));
-		list.Add(new HighScore("Dave", 150));
-		list.Add(new HighScore("Aaron", 115));
 		list.Add(new HighScore("Scott", 195));
+		list.Add(new HighScore("Dave", 150));
+		list.Add(new HighScore("Jeremy", 125));
+		list.Add(new HighScore("Aaron", 115));
 
 		StringBuilder sb = new StringBuilder ();
 		foreach(HighScore score in list){
 			sb.AppendLine(JsonUtility.ToJson (score));
 		}
 		PlayerPrefs.SetString("HighScores",sb.ToString());
+	}
+
+	public void createDefaultSavedGames(){
+
+		Player newPlayer = new Player ();
+
+		newPlayer.playerName = "Simon";
+		newPlayer.wallet = 205;
+		SaveGame (newPlayer, board);
+
+		newPlayer.playerName = "Scott";
+		newPlayer.wallet = 195;
+		SaveGame (newPlayer,  board);
+
+		newPlayer.playerName = "Dave";
+		newPlayer.wallet = 150;
+		SaveGame (newPlayer, board);
+
+
+		newPlayer.playerName = "Jeremy";
+		newPlayer.wallet = 125;
+		SaveGame (newPlayer, board);
+
+		newPlayer.playerName = "Aaron";
+		newPlayer.wallet = 115;
+		SaveGame (newPlayer, board); 
 	}
 
 }

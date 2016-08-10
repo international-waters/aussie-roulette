@@ -26,11 +26,15 @@ public class BetView : MonoBehaviour {
 	private GameObject stackCounter;
 
 
-	void Start(){
+	void Awake(){
 		
 		stackMode = ChipStacking.Counter;
 		//load game resources
+		try{
 		game = GameObject.Find("GameManager").GetComponent<GameManager>();
+		}
+		catch{
+		}
 		GameObject markerPrefab = Resources.Load<GameObject>("prefabs/BetMarker");
 		chipPrefab = Resources.Load<GameObject>("prefabs/BetChip");
 		chipTextPrefab = Resources.Load<GameObject>("prefabs/ChipText");

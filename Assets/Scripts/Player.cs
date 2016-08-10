@@ -19,7 +19,7 @@ public class Player{
 
 	public int LastWin{ get; set;}
 	public const int STARTING_BALANCE = 100;
-
+	public string lastSaveTime;
 
 
 	public Player(){
@@ -31,6 +31,7 @@ public class Player{
 		this.playerName = playerName;
 		this.wallet = wallet;
 	}
+		
 		
 	public int Wallet {
 		get {return wallet;}

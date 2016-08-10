@@ -34,6 +34,8 @@ public class Board : MonoBehaviour {
 		if (instance == null) {
 			instance = this;
 			DontDestroyOnLoad (gameObject);
+			betSpaces = gameObject.GetComponent<GridConstructor> ().CreateBettingSpaces ();
+			isTakingBets = true;
 		} else {
 			Destroy (gameObject);
 		}
@@ -41,14 +43,23 @@ public class Board : MonoBehaviour {
 
 
 	void Start () {
+		if (!PlayerPrefs.HasKey ("SavedGamesList")) {
+			game.createDefaultSavedGames ();
+		}
+	}
 
-		//create the betting grid gameobjects and store them
-		betSpaces = gameObject.GetComponent<GridConstructor> ().CreateBettingSpaces ();
-		isTakingBets = true;
+	public void Update (){
+		if (game.loadGameOnStart) {
+			game.player = game.LoadGame (game.selectedPlayerName, this);
+			game.loadGameOnStart = false;
+			game.RefreshScorePanel ();
+		}
 	}
 		
 	void OnLevelWasLoaded(){
+
 		//Toggle table, bets etc active if gamescreen is loaded otherwise deactivate
+		game = GameObject.Find("GameManager").GetComponent<GameManager>();
 		bool isThisLevelLoaded = (SceneManager.GetActiveScene ().name == "GamePlayScreen") ? true : false;
 
 		//hide the roulette table
@@ -64,11 +75,12 @@ public class Board : MonoBehaviour {
 			//check to see if this screen is returning from a wheel spin
 			//and process the winning number
 			game = GameObject.Find("GameManager").GetComponent<GameManager>();
+
+
 			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
 				game.ProcessWinNumber ();
 				game.winNumberFlag = -1;
 			}
-
 		}
 	}
 

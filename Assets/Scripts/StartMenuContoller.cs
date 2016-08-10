@@ -12,10 +12,11 @@ using System.Collections;
 
 
 public class StartMenuContoller : MonoBehaviour {
-
-	public void OnPlayButtonClick(){
-		SceneManager.LoadScene ("GamePlayScreen",LoadSceneMode.Single);
+	
+	public void OnStartPlayButtonClick(){
+		SceneManager.LoadScene ("SelectPlayerScreen",LoadSceneMode.Single);
 	}
+		
 	public void OnHighScoresButtonClick(){
 		SceneManager.LoadScene ("HighScoresScreen",LoadSceneMode.Single);
 	}
