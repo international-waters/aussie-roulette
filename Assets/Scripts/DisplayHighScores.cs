@@ -14,7 +14,7 @@ public class DisplayHighScores : MonoBehaviour {
 			Text namelbl = GameObject.Find ("PlayerName" + (i + 1)).GetComponent<Text> ();
 			Text scorelbl = GameObject.Find ("HighScore" + (i + 1)).GetComponent<Text> ();
 			namelbl.text = list [i].playerName;
-			scorelbl.text = list [i].score.ToString();
+			scorelbl.text = '$' + list [i].score.ToString();
 		}
 
 	
