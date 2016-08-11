@@ -21,37 +21,32 @@ public class WheelSpin : MonoBehaviour {
     /// 
 
     /// </summary>
-    public int RealisticSpin = 0; // 0 quick game play, 1 realistic spin time.
+
     public int winningNumber;
     private float proximity;
     private Vector3 ballinitial; //ball intial position
     private Vector3 ballfinal;
    
-    private bool doneOnce = false; //private hasspinstopped: GUIText;/////if still spinnning message-
+    private bool doneOnce = false; 
     private int numbersinwheel = 37;////// simple the 37 number is a roulette wheel a constant
-                                    //	private int spinagain = 0;/////this is set to true after the  spin is finished
-    private static float infinity = 999999;/////a large number will serve as infinity
+                                   
+    private static float infinity = 999999;
     private Vector3[] posofnumbers ;////array for 3d positions of each collision spehre for each number (0 to 36) is in the wheel
                                    //////////////////////////
-    private int getfinalpositionofpusherandballonce = 1;////used to get final postion of ball once every game
-    private Quaternion finalpusherorientation;/////use to stop the pusher (it spinns around at fixed point (0,0,0) at the end of every game
+    private int getfinalpositionofpusherandballonce = 1;
+  //  private Quaternion finalpusherorientation;/////use to stop the pusher (it spinns around at fixed point (0,0,0) 
                                               //var numberofspins: int =1;////// numnber of spins 
     private float[] distancefromnums;///// array of floats used to find distance of ball from each number
     private float minimaldistance = infinity;/////used to find which number the ball is near , infinity means not near any anumber
     private float minimaldistancetocheckifnearanumber = infinity;////// used to find number which ball is near while the wheel is still spinning
-    private float timerstart = 0; ////timer value start for every game get reset back to 0
+  //  private float timerstart = 0; ////timer value start for every game get reset back to 0
     private float ballnearsomenumber = infinity;////////means intially not near any number because its at infinity
-    private float timecounter = 0;////the timer code to determine the time of spin is not actually used
-    private float timeelapsed = 0;////timeelspsed is the time elapsed since the spin 
-    private static int mintimeforeachspin = 35; ////e.g. setting minimaltimeforeachspin (this var makes the ball move up to 40 seconds)  40 seconds makes the ball roll longer near end of spin maybe to add some excitement, setting to 0 is same as ignoring the ccariable
-    private float timetakenforthespin = 0;////the time taken for the spin from when to ball and whell stop and start
+ 
     private Vector3 notnearvector;
     ///// used for doing initlisation once
     private int loop = 0;  ///// used in loops
     private int numberstop = 0; //////the actual number from 0 to 36 then ball stopped on
     private bool spinstopped = false;/////1 if stopped spinning ,0 if still spinning
-    public static int spinstoppedglobalcopy = 0;
-    //private float minimaldistancetocheckifnearanumber= infinity;
     private int cameraposition = 2;////1 is defined as top view , is defines as near wheel view
     private float ballnearnesstonnumberdistancetostop = 0.235F;/////detemines how near the ball is to some number to stop. Nearer to zero means stop centre of the number
     private Vector3 camerarot;
@@ -96,67 +91,28 @@ public class WheelSpin : MonoBehaviour {
     private GameObject number34;
     private GameObject number35;
     private GameObject number36;
-    //////////////now declare game object for ball,pusher, camera and wheel
     public GameObject ball;
     public GameObject pusher;
     public GameObject wheel;
     public GameObject GOcamera;
-    // public GameObject TextResult;
-
- //  public TextMesh textobj;
-
+    
     // Use this for initialization
     void Start () {
         initialiseGameObj();
         resetcollsiononnumbervalues();
-       
-    }
+      }
 
     // Update is called once per frame
     void Update () {
-       // if (doneOnce == true)
-      //  {
-      //      resetcollsiononnumbervalues();
-      //      doneOnce = false;
-     //   }
-
-        if (spinstopped == false)
+          if (spinstopped == false)
             {
             dowheelmovementfunction();
             Debug.Log(spinstopped); }
         else
-        ////use the sphereX for collison detect-this is the destination collision point
-        //  computedistancefromanumber(ball.transform.position);
-              {
-            // ballandnumbercollisiondetection();
-
-            // ballFinalPos = ball.transform.position;
-           // ballstopped();
-Debug.Log("test");
-          
-          //  Vector3 v = number0.transform.position;
-
-            Debug.Log("num transform6");
-         //   Debug.Log(v.ToString());
-           // for (var loop = 0; loop <= numbersinwheel; loop++)
-          //  {
-  //
-
-
-          //  }
-
-
-          
-
-
-            ballandnumbercollisiondetection();
-          
+          {
+           ballandnumbercollisiondetection();
+          }
         }
-
-     
-
-
-    }
 
     /// controls Wheel Movement
     void dowheelmovementfunction()
@@ -164,20 +120,13 @@ Debug.Log("test");
 		float timetospin = .05f;
 		
 		{
-			
 			wheelSpinTime=wheelSpinTime-timetospin;
-		
 			rot.y = rot.y + wheelSpinTime * Time.deltaTime;
 			if (rot.y > 360) {rot.y -= 360;}
 			if (rot.y < 360) {rot.y += 360;}
 			transform.eulerAngles = -1*rot;
-          
-           
         }
-	
-
-		if (wheelSpinTime<-0.1)
-
+			if (wheelSpinTime<-0.1)
         {
             wheelSpinTime = 0;
             spinstopped = true; ////this controls the wheel 
@@ -332,33 +281,10 @@ Debug.Log(spinstopped);
         for (int loop = 0; loop <= numbersinwheel; loop++)
         {//////////////computes the distance of ball to each number using the norm of the vector
             distancefromnums[loop] = (posofnumbers[loop] - ballPos).magnitude;
-          //  Debug.Log("3");
-          //  Debug.Log(distancefromnums[loop]);
+         
         }
     }
-    /////////
-   // void decideifspinstoppedandprocessthespin()
-  //  {
-  //      if ((spinstopped == 1) && (ballnearsomenumber < ballnearnesstonnumberdistancetostop) && (timeelapsed > mintimeforeachspin))
-   //     {
-   //         /////the above is read as if the function controlling the wheel then spin is stopped, the ball has collided near enough
-   //         ////to some number and the minimal time required for eash spin has passed
-    //        if (getfinalpositionofpusherandballonce == 1)
-  //          {
-  //              ////this freezes the ball after the elapsed time and other stopping constions are met
-                //// because of the frictional forces between 
-                //// the ball and table will keep ot drifting and this will be hard to see anyway
-  //              ballFinalPos = ball.transform.position;
-  //              finalpusherorientation = pusher.transform.rotation;////store the final pusher orientation -not the postion of pusher is fixed around (0,0,0)
-  //              getfinalpositionofpusherandballonce = 2;
-  //              timetakenforthespin = timeelapsed;
-  //          }
-   //         ballstopped();////stop the ball
-   //         pusher.transform.rotation = finalpusherorientation;/////after the spin stop keep the pusher stopped at final orientation
-   //         ballandnumbercollisiondetection();////while the collsion can be done with unity's biult in collision detection
-                                              //////system using the custom coded collision detection system here in the code is a good way to do it too
-  //      }
-  //  }
+   
     ////
     void ballandnumbercollisiondetection()
     {
@@ -389,7 +315,7 @@ Debug.Log(spinstopped);
             }
         }
         Debug.Log(numberstop);
-      
+        winningNumber = numberstop;
     }
 
     
