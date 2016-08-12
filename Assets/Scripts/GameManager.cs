@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour {
 	//marker stays on the board a bit longer after losing chips are cleared
 	public float winMarkerExtraDelay = 2f;
 	private GameObject tableObj;
+	public bool cheatMode = false;
 
 	public bool loadGameOnStart = false;
 
