@@ -117,7 +117,7 @@ public class GameScreenUIcontroller : MonoBehaviour {
 	} 
 
 	public void OnSpinDiffSceneButtonClick(){
-		SceneManager.LoadScene ("SpinTestScene");
+		SceneManager.LoadScene ("rouletteWheel");
 	}
 		
 
