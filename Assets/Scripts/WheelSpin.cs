@@ -12,6 +12,8 @@
 
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class WheelSpin : MonoBehaviour {
 
@@ -21,7 +23,6 @@ public class WheelSpin : MonoBehaviour {
     private float proximity;
    // private Vector3 ballinitial; //ball intial position
     private Vector3 ballfinal;
-    private bool doneOnce = false; 
     private int numbersinwheel = 37;////// simple the 37 number is a roulette wheel a constant
     private static float infinity = 999999;
     private Vector3[] posofnumbers ;////array for 3d positions of each collision spehre for each number (0 to 36) is in the wheel
@@ -29,7 +30,6 @@ public class WheelSpin : MonoBehaviour {
     private float minimaldistance = infinity;/////used to find which number the ball is near , infinity means not near any anumber
     private float ballnearsomenumber = infinity;////////means intially not near any number because its at infinity
    // private Vector3 notnearvector;
-    private int loop = 0;  ///// used in loops
     private int numberstop = 0; //////the actual number from 0 to 36 then ball stopped on
     private bool spinstopped = false;/////1 if stopped spinning ,0 if still spinning
   //  private int cameraposition = 2;////1 is defined as top view , is defines as near wheel view
@@ -78,11 +78,24 @@ public class WheelSpin : MonoBehaviour {
     private GameObject pusher;
     private GameObject wheel;
   //  private GameObject movecamera;
-    
+  
+	private GameManager game; // holds a reference to main game manager object
+	private GameObject winDisplayPanel;
+	private bool isReturning = false;
+	private Text winnerLabel;
+	private int[] blackNumbers = { 2, 4, 6, 8, 10, 11, 13, 15, 17, 20,
+		22, 24, 26, 28, 29, 31, 33, 35 };
+
+
+  
     // Use this for initialization
     void Start () {
         initialiseGameObj();
         resetcollsiononnumbervalues();
+		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		winnerLabel = GameObject.Find ("WinnerLabel").GetComponent<Text> ();
+		winDisplayPanel = GameObject.Find ("WinDisplayPanel");
+		winDisplayPanel.SetActive (false);
       }
 
     // Update is called once per frame
@@ -94,9 +107,37 @@ public class WheelSpin : MonoBehaviour {
         }
         else
           {
-           ballandnumbercollisiondetection();
+			//just want to call this once
+			if(!isReturning){
+				ballandnumbercollisiondetection ();
+				game.winNumberFlag = this.winningNumber;
+				DisplayWinPanel ();
+				StartCoroutine(returnAfterDelay ()); // pause and then return to game screen
+				isReturning = true;
+			}      
           }
         }
+	IEnumerator returnAfterDelay(){
+	yield return new WaitForSeconds (2.0f);
+	SceneManager.LoadScene ("GamePlayScreen");
+	}
+
+	void DisplayWinPanel(){
+		if (this.winningNumber == 0)
+			this.winnerLabel.text = "0 Green";
+		else {
+			bool isBlack = false;
+			foreach (int number in blackNumbers) {
+				if (this.winningNumber == number) {
+					isBlack = true;
+					break;
+				}
+			}
+			string colour = (isBlack) ? " Black" : " Red";
+			this.winnerLabel.text = winningNumber + colour;
+		}
+		this.winDisplayPanel.SetActive (true);
+	}
 
     /// controls Wheel Movement
     void dowheelmovementfunction()
