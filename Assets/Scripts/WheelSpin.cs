@@ -14,51 +14,34 @@ using UnityEngine;
 using System.Collections;
 
 public class WheelSpin : MonoBehaviour {
-	public Vector3 rot;
+
+    public Vector3 rot;
 	float wheelSpinTime = 121;
-    /// <summary>
-    /// ////
-    /// 
-
-    /// </summary>
-
     public int winningNumber;
     private float proximity;
-    private Vector3 ballinitial; //ball intial position
+   // private Vector3 ballinitial; //ball intial position
     private Vector3 ballfinal;
-   
     private bool doneOnce = false; 
     private int numbersinwheel = 37;////// simple the 37 number is a roulette wheel a constant
-                                   
     private static float infinity = 999999;
     private Vector3[] posofnumbers ;////array for 3d positions of each collision spehre for each number (0 to 36) is in the wheel
-                                   //////////////////////////
-    private int getfinalpositionofpusherandballonce = 1;
-  //  private Quaternion finalpusherorientation;/////use to stop the pusher (it spinns around at fixed point (0,0,0) 
-                                              //var numberofspins: int =1;////// numnber of spins 
     private float[] distancefromnums;///// array of floats used to find distance of ball from each number
     private float minimaldistance = infinity;/////used to find which number the ball is near , infinity means not near any anumber
-    private float minimaldistancetocheckifnearanumber = infinity;////// used to find number which ball is near while the wheel is still spinning
-  //  private float timerstart = 0; ////timer value start for every game get reset back to 0
     private float ballnearsomenumber = infinity;////////means intially not near any number because its at infinity
- 
-    private Vector3 notnearvector;
-    ///// used for doing initlisation once
+   // private Vector3 notnearvector;
     private int loop = 0;  ///// used in loops
     private int numberstop = 0; //////the actual number from 0 to 36 then ball stopped on
     private bool spinstopped = false;/////1 if stopped spinning ,0 if still spinning
-    private int cameraposition = 2;////1 is defined as top view , is defines as near wheel view
-    private float ballnearnesstonnumberdistancetostop = 0.235F;/////detemines how near the ball is to some number to stop. Nearer to zero means stop centre of the number
-    private Vector3 camerarot;
+  //  private int cameraposition = 2;////1 is defined as top view , is defines as near wheel view
+  //  private float ballnearnesstonnumberdistancetostop = 0.235F;/////detemines how near the ball is to some number to stop. Nearer to zero means stop centre of the number
+  //  private Vector3 camerarot;
     private Vector3 ballPos;
     private Vector3 ballFinalPos;
-
-
-     GameObject number0;///game object this hold the collsion sphere for the zero number
-	 GameObject number1;/////similar to above but for the number 1
-    GameObject number2;
-     GameObject number3;
-    GameObject number4;
+    private GameObject number0;///game object this hold the collsion sphere for the zero number
+	private GameObject number1;/////similar to above but for the number 1
+    private GameObject number2;
+    private GameObject number3;
+    private GameObject number4;
     private GameObject number5;
     private GameObject number6;
     private GameObject number7;
@@ -91,10 +74,10 @@ public class WheelSpin : MonoBehaviour {
     private GameObject number34;
     private GameObject number35;
     private GameObject number36;
-    public GameObject ball;
-    public GameObject pusher;
-    public GameObject wheel;
-    public GameObject GOcamera;
+    private GameObject ball;
+    private GameObject pusher;
+    private GameObject wheel;
+  //  private GameObject movecamera;
     
     // Use this for initialization
     void Start () {
@@ -107,7 +90,8 @@ public class WheelSpin : MonoBehaviour {
           if (spinstopped == false)
             {
             dowheelmovementfunction();
-            Debug.Log(spinstopped); }
+            //  Debug.Log(spinstopped); 
+        }
         else
           {
            ballandnumbercollisiondetection();
@@ -128,18 +112,17 @@ public class WheelSpin : MonoBehaviour {
         }
 			if (wheelSpinTime<-0.1)
         {
-            wheelSpinTime = 0;
-            spinstopped = true; ////this controls the wheel 
+            spinstopped = true; ////this controls the wheel exit to calc number
         };
        
-Debug.Log(spinstopped);
+//Debug.Log(spinstopped);
     }
 
     void initialiseGameObj ()
     {
         ball = GameObject.Find("Ball");
         wheel = GameObject.Find("roulettewheel");
-        GOcamera = GameObject.Find("thecamera");
+      //  GOcamera = GameObject.Find("thecamera");
         pusher = GameObject.Find("pushertomoveball");
         number0 = GameObject.Find("Sphere0");
         number1 = GameObject.Find("Sphere1");
@@ -178,63 +161,32 @@ Debug.Log(spinstopped);
         number34 = GameObject.Find("Sphere34");
         number35 = GameObject.Find("Sphere35");
         number36 = GameObject.Find("Sphere36");
-
-        
+        /// Wheel Spin random generator...
+        wheelSpinTime = Random.Range(100, 170);
     }
 
-    void finddistfromsomenumber()
-    {
-        ///// This determies the distance of the ball from some number and
-        /////this function is used to decide when to stop the wheel which is when
-        /////it is near  to some number and the nearness to a number is determined by this function
-        for (var loop = 0; loop <= numbersinwheel; loop++)
-        {
-            if (minimaldistancetocheckifnearanumber > (distancefromnums[loop]))
-            {
-                minimaldistancetocheckifnearanumber = distancefromnums[loop];
-            }
-        }
-    }
-
-
-    void resetcollsiononnumbervalues()
+     void resetcollsiononnumbervalues()
     {//////this function resets the vlaues for collosion detectiom
      /////////works by storing all the collsion spheres for each number and
      //////// comparing the ditance from ball
-        notnearvector.x = infinity;
-        notnearvector.y = infinity;
-        notnearvector.z = infinity;
+      //  notnearvector.x = infinity;
+     //   notnearvector.y = infinity;
+      //  notnearvector.z = infinity;
         posofnumbers = new Vector3[numbersinwheel + 2];///// array of 3d vectors to hold ball psotion numbers
         distancefromnums = new float[numbersinwheel + 2];////39 values to decide which the ball is nearest to
         for (var loop = 0; loop <= (numbersinwheel + 1); loop++)
         {
             distancefromnums[loop] = infinity;///// means not near
-            posofnumbers[loop] = notnearvector;
+       //     posofnumbers[loop] = notnearvector;
         }
     }
     ////////////////////////////////////////////
 
-    void ballstopped()////obsolite
-    {
-        /////the ball is moved by the pusher so stop the pusher first then stop the ball using ths fucntion
-        ball.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        ball.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-        ball.GetComponent<ConstantForce>().force = Vector3.zero;
-        ball.GetComponent<ConstantForce>().relativeForce = Vector3.zero;
-        ball.GetComponent<ConstantForce>().torque = Vector3.zero;
-        ball.transform.position = ballfinal;
-        //	ball.transform.position.x=ballfinal.x;
-        //	ball.transform.position.y=ballfinal.y;
-        //	ball.transform.position.z=ballfinal.z;
-    }
-
     void getnumberpositions()
-    {
-        
-        /////this get the collision spheres 3D positions for each number so they can be plugged into
+    {   /////this get the collision spheres 3D positions for each number so they can be plugged into
         /////the collision detection function
         ////////can use array to make smaller but this is easier to understand
-      posofnumbers[0] = number0.transform.position;
+        posofnumbers[0] = number0.transform.position;
         posofnumbers[1] = number1.transform.position;
         posofnumbers[2] = number2.transform.position;
         posofnumbers[3] = number3.transform.position;
@@ -271,51 +223,45 @@ Debug.Log(spinstopped);
         posofnumbers[34] = number34.transform.position;
         posofnumbers[35] = number35.transform.position;
         posofnumbers[36] = number36.transform.position;
+
         ballFinalPos = ball.transform.position;
         
         /////put postion of roulette wheel number in the array
     }
-    /////////////////-----------------
+    /////
+
     void computedistancefromanumber(Vector3 ballPos)
     {
         for (int loop = 0; loop <= numbersinwheel; loop++)
         {//////////////computes the distance of ball to each number using the norm of the vector
             distancefromnums[loop] = (posofnumbers[loop] - ballPos).magnitude;
-         
         }
     }
    
-    ////
     void ballandnumbercollisiondetection()
     {
         //////////////////////begin collision detection routine for ball near numbers 0 to 36
-
-    
-     
         getnumberpositions();////use the spheres for collison detect-this is the destination collision point
         computedistancefromanumber(ballFinalPos);
         findnumberstoppedon();
-
         ////////////end collision detection routine for ball near numbers 0 to 36
     }
-
-    //////
+    
     void findnumberstoppedon()
     {////////////////determines the number stopped upon by finding the nearest ditance to the ball
-     //////////not that the disctance can never be equal since the ball keeps moving until
-     //////////it converges to some number on the wheel
-     //////////this function is used after the wheel has stopped
+        //////////this function is used after the wheel has stopped
         for (int loop = 0; loop <= numbersinwheel; loop++)
         {
             if (minimaldistance > (distancefromnums[loop]))
             {
                 numberstop = loop;
                 minimaldistance = distancefromnums[loop];
-           
             }
         }
         Debug.Log(numberstop);
         winningNumber = numberstop;
+
+        /////Exit scene with winnningNumber
     }
 
     
