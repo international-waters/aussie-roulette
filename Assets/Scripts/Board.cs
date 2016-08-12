@@ -65,6 +65,13 @@ public class Board : MonoBehaviour {
 		//hide the roulette table
 		gameObject.GetComponent<SpriteRenderer>().enabled = isThisLevelLoaded;
 
+		//Set Cheat panel visablity
+		if (isThisLevelLoaded) {
+			GameObject cheatModePanel = GameObject.Find ("CheatModePanel");
+			cheatModePanel.SetActive (game.cheatMode);
+		}
+
+
 		//hide all the chips and stack counter labels etc.
 		foreach (Transform child in transform) {
 			if (child.name != "BetMarker(Clone)" && child.name != "WinMarker(Clone)") {
@@ -75,8 +82,6 @@ public class Board : MonoBehaviour {
 			//check to see if this screen is returning from a wheel spin
 			//and process the winning number
 			game = GameObject.Find("GameManager").GetComponent<GameManager>();
-
-
 			if (game.winNumberFlag != -1 && game.winNumberFlag <= 36) {
 				game.ProcessWinNumber ();
 				game.winNumberFlag = -1;
