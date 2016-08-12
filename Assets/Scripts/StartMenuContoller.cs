@@ -9,10 +9,25 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
 
 
 public class StartMenuContoller : MonoBehaviour {
-	
+
+	Toggle cheatMode;
+	GameManager game;
+
+	public void Start(){
+		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+
+		try{  
+		//this script is used on scenes other that start scene	
+		cheatMode = GameObject.Find ("CheatModeToggle").GetComponent<Toggle> ();
+		cheatMode.isOn = game.cheatMode;
+		}catch{
+		}
+	}
+
 	public void OnStartPlayButtonClick(){
 		SceneManager.LoadScene ("SelectPlayerScreen",LoadSceneMode.Single);
 	}
@@ -43,6 +58,10 @@ public class StartMenuContoller : MonoBehaviour {
 	{
 		Application.CancelQuit();
 		SceneManager.LoadScene("StartScreen", LoadSceneMode.Single);
+	}
+
+	public void OnCheatModeChanged(){
+		game.cheatMode = cheatMode.isOn;
 	}
 
 }
