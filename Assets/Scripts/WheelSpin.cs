@@ -12,6 +12,8 @@
 
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class WheelSpin : MonoBehaviour {
 	public Vector3 rot;
@@ -95,24 +97,68 @@ public class WheelSpin : MonoBehaviour {
     public GameObject pusher;
     public GameObject wheel;
     public GameObject GOcamera;
-    
+
+	private GameManager game; // holds a reference to main game manager object
+	private GameObject winDisplayPanel;
+	private bool isReturning = false;
+	private Text winnerLabel;
+	private int[] blackNumbers = { 2, 4, 6, 8, 10, 11, 13, 15, 17, 20,
+		22, 24, 26, 28, 29, 31, 33, 35 };
+
+
     // Use this for initialization
     void Start () {
         initialiseGameObj();
         resetcollsiononnumbervalues();
+		game = GameObject.Find ("GameManager").GetComponent<GameManager> ();
+		winnerLabel = GameObject.Find ("WinnerLabel").GetComponent<Text> ();
+		winDisplayPanel = GameObject.Find ("WinDisplayPanel");
+		winDisplayPanel.SetActive (false);
+
       }
 
     // Update is called once per frame
     void Update () {
-          if (spinstopped == false)
-            {
-            dowheelmovementfunction();
-            Debug.Log(spinstopped); }
-        else
-          {
-           ballandnumbercollisiondetection();
-          }
-        }
+		if (spinstopped == false) 
+		{
+			dowheelmovementfunction ();
+			Debug.Log (spinstopped);
+		} 
+		else
+		{
+			ballandnumbercollisiondetection ();
+			game.winNumberFlag = this.winningNumber;
+
+			//just want to call this once
+			if(!isReturning){
+				DisplayWinPanel ();
+				StartCoroutine(returnAfterDelay ()); // pause and then return to game screen
+				isReturning = true;
+			}
+		}
+	}
+		
+	IEnumerator returnAfterDelay(){
+		yield return new WaitForSeconds (2.0f);
+		SceneManager.LoadScene ("GamePlayScreen");
+	}
+
+	void DisplayWinPanel(){
+		if (this.winningNumber == 0)
+			this.winnerLabel.text = "0 Green";
+		else {
+			bool isBlack = false;
+			foreach (int number in blackNumbers) {
+				if (this.winningNumber == number) {
+					isBlack = true;
+					break;
+				}
+			}
+			string colour = (isBlack) ? " Black" : " Red";
+			this.winnerLabel.text = winningNumber + colour;
+		}
+		this.winDisplayPanel.SetActive (true);
+	}
 
     /// controls Wheel Movement
     void dowheelmovementfunction()
@@ -130,7 +176,7 @@ public class WheelSpin : MonoBehaviour {
         {
             wheelSpinTime = 0;
             spinstopped = true; ////this controls the wheel 
-        };
+		};
        
 Debug.Log(spinstopped);
     }
