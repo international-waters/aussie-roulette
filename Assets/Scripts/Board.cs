@@ -67,8 +67,12 @@ public class Board : MonoBehaviour {
 
 		//Set Cheat panel visablity
 		if (isThisLevelLoaded) {
+			try{
 			GameObject cheatModePanel = GameObject.Find ("CheatModePanel");
 			cheatModePanel.SetActive (game.cheatMode);
+			}
+			catch{
+			}
 		}
 
 
