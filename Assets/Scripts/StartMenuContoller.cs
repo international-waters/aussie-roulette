@@ -64,4 +64,9 @@ public class StartMenuContoller : MonoBehaviour {
 		game.cheatMode = cheatMode.isOn;
 	}
 
+	public void OnDeleteSavedDataClick(){
+		PlayerPrefs.DeleteAll ();
+		Application.Quit();
+	}
+
 }
